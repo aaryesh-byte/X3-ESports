@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X3 ESports | Pimple Saudagar's Premier Arena</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;500;800&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-dark: #06080c;
+            --card-bg: #11141b;
+            --neon-cyan: #00f2ff;
+            --neon-pink: #ff0055;
+            --text-main: #e0e6ed;
+            --glass: rgba(255, 255, 255, 0.03);
+        }
+
+        * { box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-dark); color: var(--text-main); margin: 0; scroll-behavior: smooth; }
+
+        h1, h2, h3, .logo { font-family: 'Orbitron', sans-serif; text-transform: uppercase; letter-spacing: 2px; }
+        section { padding: 80px 10%; border-bottom: 1px solid #1a1f29; }
+        
+        /* AUTHENTICATION VIEW */
+        #auth-view { display: flex; min-height: 100vh; justify-content: center; align-items: center; background: linear-gradient(rgba(6,8,12,0.9), rgba(6,8,12,0.9)), url('https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=2070') center/cover; position: fixed; top: 0; left: 0; width: 100%; z-index: 20000; }
+        .auth-card { background: var(--card-bg); padding: 50px 40px; border-radius: 15px; border: 1px solid var(--neon-cyan); width: 90%; max-width: 400px; box-shadow: 0 0 40px rgba(0, 242, 255, 0.15); text-align: center; position: relative; }
+        .auth-card .logo { font-size: 2.2rem; margin-bottom: 10px; }
+        .auth-card p { color: #888; font-size: 0.9rem; margin-bottom: 30px; }
+        
+        .btn-auth { width: 100%; padding: 15px; border-radius: 5px; font-weight: bold; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; margin-bottom: 15px; border: none; }
+        .btn-google { background: #fff; color: #000; }
+        .btn-google:hover { background: #eee; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,255,255,0.2); }
+        .btn-email { background: #1a1f29; color: white; border: 1px solid #333; }
+        .btn-email:hover { border-color: var(--neon-cyan); color: var(--neon-cyan); }
+        .btn-guest { background: transparent; color: #888; border: 1px solid #333; }
+        .btn-guest:hover { border-color: var(--neon-pink); color: var(--neon-pink); }
+        
+        .divider { display: flex; align-items: center; margin: 20px 0; color: #555; font-size: 0.8rem; font-weight: bold; }
+        .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #222; }
+        .divider span { padding: 0 10px; }
+
+        #email-login-form { display: none; text-align: left; }
+        .back-link { color: #888; font-size: 0.8rem; cursor: pointer; display: block; text-align: center; margin-top: 15px; transition: 0.3s; }
+        .back-link:hover { color: var(--neon-cyan); }
+
+        /* HEADER & NAV */
+        header { background: rgba(6, 8, 12, 0.95); backdrop-filter: blur(10px); padding: 15px 10%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; border-bottom: 2px solid var(--neon-cyan); }
+        .logo { font-size: 1.6rem; color: var(--text-main); }
+        .logo span { color: var(--neon-cyan); }
+        .nav-links { display: flex; align-items: center; gap: 20px; }
+        nav a { color: white; text-decoration: none; font-size: 0.8rem; font-weight: 600; transition: 0.3s; text-transform: uppercase; }
+        nav a:hover { color: var(--neon-cyan); }
+        
+        /* USER PROFILE BADGE */
+        .user-badge { display: flex; align-items: center; gap: 10px; background: #1a1f29; padding: 5px 15px; border-radius: 50px; border: 1px solid #333; font-size: 0.8rem; font-weight: bold; }
+        .user-badge i { color: var(--neon-cyan); }
+        .logout-btn { color: #888; cursor: pointer; font-size: 0.8rem; font-weight: bold; border: none; background: none; transition: 0.3s; }
+        .logout-btn:hover { color: white; }
+
+        /* MAIN CONTENT - Hidden initially */
+        #main-content { display: none; }
+
+        /* HERO SECTION & CARDS */
+        .hero { height: 80vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=2070') center/cover; }
+        .hero h1 { font-size: 4rem; margin-bottom: 10px; text-shadow: 0 0 20px var(--neon-cyan); }
+        .hero p { font-size: 1.2rem; color: var(--neon-cyan); margin-bottom: 30px; }
+        .btn-primary { background:var(--neon-cyan); color:black; padding:15px 40px; border-radius:5px; font-weight:800; text-decoration:none; border:none; cursor:pointer; font-family: 'Orbitron', sans-serif; transition: 0.3s; }
+        .btn-primary:hover { box-shadow: 0 0 15px var(--neon-cyan); transform: scale(1.05); }
+
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+        .card { background: var(--card-bg); padding: 30px; border-radius: 15px; border: 1px solid #222; transition: 0.4s; cursor: pointer; position: relative; overflow: hidden; }
+        .card:hover { border-color: var(--neon-cyan); transform: translateY(-10px); box-shadow: 0 10px 30px rgba(0, 242, 255, 0.1); }
+        .card.bookable::after { content: 'CLICK TO BOOK'; position: absolute; bottom: -40px; left: 0; width: 100%; background: var(--neon-cyan); color: black; text-align: center; padding: 10px 0; font-weight: bold; transition: 0.3s; font-family: 'Orbitron', sans-serif; }
+        .card.bookable:hover::after { bottom: 0; }
+
+        .price-tag { font-size: 2.5rem; color: var(--neon-cyan); font-weight: 800; margin: 15px 0; }
+        .featured-card { border: 2px solid var(--neon-pink) !important; background: #161a24; }
+        .featured-card:hover { border-color: var(--neon-pink); box-shadow: 0 10px 30px rgba(255, 0, 85, 0.15); }
+        .featured-card.bookable::after { background: var(--neon-pink); }
+
+        /* CAFE & MISC */
+        .menu-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #222; }
+        .menu-row span:first-child { color: var(--neon-cyan); font-weight: 600; }
+        .faq-box { background: var(--glass); padding: 20px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid var(--neon-pink); }
+        .contact-flex { display: flex; gap: 40px; flex-wrap: wrap; }
+        .map-frame { flex: 1; min-width: 300px; height: 350px; border-radius: 15px; overflow: hidden; border: 1px solid #333; }
+        .wa-float { position: fixed; bottom: 30px; right: 30px; background: #25d366; color: white; padding: 15px 25px; border-radius: 50px; text-decoration: none; font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.3); z-index: 9999; display: flex; align-items: center; }
+
+        /* MODALS, FORMS & TABLES */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 10000; justify-content: center; align-items: center; }
+        .modal-content { background: var(--card-bg); padding: 40px; border-radius: 15px; border: 1px solid var(--neon-cyan); width: 90%; max-width: 400px; position: relative; box-shadow: 0 0 30px rgba(0, 242, 255, 0.2); }
+        .modal-content.large-modal { max-width: 800px; padding: 30px; }
+        .modal-content h2 { margin-top: 0; color: var(--neon-cyan); text-align: center; margin-bottom: 20px; }
+        .close-btn { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; color: #888; cursor: pointer; transition: 0.3s; }
+        .close-btn:hover { color: var(--neon-pink); }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 0.8rem; margin-bottom: 5px; color: #aaa; text-transform: uppercase; }
+        .form-group input { width: 100%; padding: 12px; background: #0a0c10; border: 1px solid #333; color: white; border-radius: 5px; font-family: 'Inter', sans-serif; color-scheme: dark; }
+        .form-group input:focus { outline: none; border-color: var(--neon-cyan); }
+        .form-group input[readonly] { background: #1a1f29; color: var(--neon-cyan); font-weight: bold; cursor: not-allowed; border-color: #222; }
+        .btn-submit { width: 100%; background: var(--neon-cyan); color: black; border: none; padding: 15px; font-weight: bold; font-family: 'Orbitron'; cursor: pointer; border-radius: 5px; margin-top: 10px; transition: 0.3s; }
+        
+        /* DASHBOARD TABLES */
+        #admin-view { display: none; min-height: 100vh; padding: 80px 10%; background: var(--bg-dark); }
+        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #333; padding-bottom: 20px; }
+        .admin-table-container { overflow-x: auto; max-height: 60vh; }
+        table { width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 10px; overflow: hidden; }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #222; }
+        th { background: #161a24; color: var(--neon-cyan); font-family: 'Orbitron'; font-size: 0.9rem; }
+        tr:hover { background: #1a1f29; }
+        .btn-delete { background: rgba(255,0,85,0.1); color: var(--neon-pink); border: 1px solid var(--neon-pink); padding: 5px 10px; border-radius: 3px; cursor: pointer; }
+
+        @media (max-width: 768px) { .hero h1 { font-size: 2.5rem; } header { flex-direction: column; gap: 15px; } .nav-links { flex-wrap: wrap; justify-content: center; } }
+    </style>
+</head>
+<body>
+
+<!-- ================= AUTHENTICATION GATEWAY ================= -->
+<div id="auth-view">
+    <div class="auth-card">
+        <div class="logo">X3 <span>ESPORTS</span></div>
+        <p>Login to book your rig and secure your spot.</p>
+
+        <div id="auth-options">
+            <button class="btn-auth btn-google" onclick="simulateGoogleLogin()">
+                <i class="fab fa-google" style="color:#DB4437;"></i> Continue with Google
+            </button>
+            <button class="btn-auth btn-email" onclick="toggleEmailForm(true)">
+                <i class="fas fa-envelope"></i> Continue with Email
+            </button>
+            <div class="divider"><span>OR</span></div>
+            <button class="btn-auth btn-guest" onclick="loginAsGuest()">
+                <i class="fas fa-user-secret"></i> Continue as Guest
+            </button>
+        </div>
+
+        <form id="email-login-form" onsubmit="handleEmailLogin(event)">
+            <div class="form-group">
+                <label>Gamer Tag / Name</label>
+                <input type="text" id="auth-name" placeholder="John Wick" required>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="auth-email" placeholder="gamer@x3.com" required>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="auth-pass" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn-submit">ENTER ARENA</button>
+            <span class="back-link" onclick="toggleEmailForm(false)"><i class="fas fa-arrow-left"></i> Back to options</span>
+        </form>
+    </div>
+</div>
+
+<!-- ================= MAIN WEBSITE CONTENT ================= -->
+<div id="main-content">
+    <header>
+        <div class="logo">X3 <span>ESPORTS</span></div>
+        <nav class="nav-links">
+            <a href="#arena">The Arena</a>
+            <a href="#pricing">Rates</a>
+            <a href="#cafe">Cafe</a>
+            <a href="#faq">FAQ</a>
+            
+            <div id="header-user-badge" class="user-badge">
+                <i class="fas fa-user"></i> <span id="display-username">Guest</span>
+                <!-- NEW: My Bookings Button -->
+                <button class="logout-btn" style="color:var(--neon-cyan); margin-left:15px; border-left:1px solid #444; padding-left:15px;" onclick="openCustomerBookings()">My Bookings</button>
+                <button class="logout-btn" style="color:var(--neon-pink); margin-left:10px;" onclick="logoutUser()"><i class="fas fa-sign-out-alt"></i></button>
+            </div>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h1>UNLEASH THE PRO</h1>
+        <p>5th Floor, Spot 18 Mall, Pimple Saudagar</p>
+        <a href="#pricing" class="btn-primary">VIEW RATES</a>
+    </section>
+
+    <!-- ... (Arena, Pricing, Cafe, FAQ, Contact remain exactly the same visually) ... -->
+    <section id="arena">
+        <h2 style="text-align:center">The Gear</h2>
+        <div class="grid-3">
+            <div class="card" style="cursor:default;">
+                <h3>PC ZONE</h3><p>RTX 40-Series GPU<br>240Hz Monitors<br>Mechanical Gear</p>
+            </div>
+            <div class="card" style="cursor:default;">
+                <h3>PS5 LOUNGE</h3><p>4K HDR Gaming<br>DualSense Controllers<br>Latest Releases</p>
+            </div>
+            <div class="card" style="cursor:default;">
+                <h3>SNOOKER</h3><p>Professional Tables<br>Tournament Cues<br>Private Area</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="pricing" style="background: #080a0f;">
+        <h2 style="text-align:center">Battle Passes</h2>
+        <p style="text-align:center; color:#888; margin-bottom: 30px;">Click any pass to reserve your spot.</p>
+        <div class="grid-3">
+            <div class="card bookable" onclick="openBooking('Hourly Pass - ₹60')">
+                <h4>Hourly</h4><div class="price-tag">₹60</div><p>Standard PC Access</p>
+            </div>
+            <div class="card featured-card bookable" onclick="openBooking('MIDNIGHT Pass - ₹350')">
+                <h4>MIDNIGHT</h4><div class="price-tag">₹350</div><p>Fri-Sat (11PM - 6AM)</p><p style="color:var(--neon-pink)">Includes 1 Energy Drink</p>
+            </div>
+            <div class="card bookable" onclick="openBooking('Monthly Pass - ₹2500')">
+                <h4>Monthly</h4><div class="price-tag">₹2500</div><p>30 Hours / Month</p>
+            </div>
+        </div>
+    </section>
+
+    <footer style="text-align:center; padding: 40px; font-size: 0.8rem; color:#444;">
+        © 2026 X3 Esports. Powered by Gaming Passion.<br>
+        <a href="#" onclick="openAdminLogin(event)" style="color:#333; text-decoration:none; margin-top:10px; display:inline-block;">Admin Access</a>
+    </footer>
+</div>
+
+<!-- ================= MODALS & ADMIN VIEWS ================= -->
+
+<!-- 1. Make Booking Modal -->
+<div id="booking-modal" class="modal-overlay">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal('booking-modal')">&times;</span>
+        <h2>Secure Your Rig</h2>
+        <form id="booking-form" onsubmit="handleBookingSubmit(event)">
+            <div class="form-group"><label>Selected Pass</label><input type="text" id="book-pass" readonly></div>
+            <div class="form-group"><label>Gamer Name</label><input type="text" id="book-name" required></div>
+            <div class="form-group"><label>Phone Number</label><input type="tel" id="book-phone" required></div>
+            <div class="form-group" style="display:flex; gap:10px;">
+                <div style="flex:1"><label>Date</label><input type="date" id="book-date" required></div>
+                <div style="flex:1"><label>Time</label><input type="time" id="book-time" required></div>
+            </div>
+            <div class="form-group"><label>Payment Method</label><input type="text" value="Pay at Counter" readonly style="color:var(--neon-pink); border-color:#444;"></div>
+            <button type="submit" class="btn-submit">CONFIRM BOOKING</button>
+        </form>
+    </div>
+</div>
+
+<!-- 2. Customer "My Bookings" Modal (NEW) -->
+<div id="customer-bookings-modal" class="modal-overlay">
+    <div class="modal-content large-modal">
+        <span class="close-btn" onclick="closeModal('customer-bookings-modal')">&times;</span>
+        <h2>My <span style="color:white">Battle Passes</span></h2>
+        <p style="text-align:center; color:#888; font-size:0.9rem; margin-top:-10px; margin-bottom:20px;">History for: <span id="customer-history-name" style="color:var(--neon-cyan)"></span></p>
+        
+        <div class="admin-table-container">
+            <table>
+                <thead>
+                    <tr><th>Ref ID</th><th>Pass Type</th><th>Date</th><th>Time</th></tr>
+                </thead>
+                <tbody id="customer-bookings-body">
+                    <!-- Populated by JS -->
+                </tbody>
+            </table>
+            <p id="customer-no-bookings-msg" style="text-align:center; padding: 40px; color:#555; display:none;">No active bookings found under your name.</p>
+        </div>
+    </div>
+</div>
+
+<!-- 3. Admin Login Modal -->
+<div id="admin-login-modal" class="modal-overlay">
+    <div class="modal-content" style="border-color: var(--neon-pink); box-shadow: 0 0 30px rgba(255, 0, 85, 0.2);">
+        <span class="close-btn" onclick="closeModal('admin-login-modal')">&times;</span>
+        <h2 style="color: var(--neon-pink);">System Override</h2>
+        <form id="admin-login-form" onsubmit="handleAdminLogin(event)">
+            <div class="form-group"><label>Username</label><input type="text" id="admin-user" required></div>
+            <div class="form-group"><label>Password</label><input type="password" id="admin-pass" required></div>
+            <p id="admin-error" style="color:var(--neon-pink); font-size:0.8rem; text-align:center; display:none;">Access Denied. Invalid credentials.</p>
+            <button type="submit" class="btn-submit" style="background:var(--neon-pink);">AUTHENTICATE</button>
+        </form>
+    </div>
+</div>
+
+<!-- 4. Admin Dashboard View -->
+<div id="admin-view">
+    <div class="admin-header">
+        <div>
+            <h2>Admin <span style="color:var(--neon-cyan)">Dashboard</span></h2>
+            <p style="color:#888; font-size:0.9rem;">Manage incoming reservations from Google Sheets</p>
+        </div>
+        <button class="btn-delete" onclick="logoutAdmin()" style="border-color:#888; color:#888;">EXIT ADMIN</button>
+    </div>
+    <div class="admin-table-container">
+        <table>
+            <thead><tr><th>Ref ID</th><th>Name</th><th>Phone</th><th>Pass Type</th><th>Date & Time</th><th>Payment</th><th>Action</th></tr></thead>
+            <tbody id="bookings-table-body"></tbody>
+        </table>
+        <p id="no-bookings-msg" style="text-align:center; padding: 40px; color:#555; display:none;">No active bookings found.</p>
+    </div>
+</div>
+
+<!-- ================= JAVASCRIPT LOGIC ================= -->
+<script>
+    // =========================================================================================
+    // ⚠️ IMPORTANT: Paste your deployed Google Web App URL here!
+    // =========================================================================================
+    const GOOGLE_SCRIPT_URL = "PASTE_YOUR_GOOGLE_WEB_APP_URL_HERE";
+
+    // --- STATE MANAGEMENT ---
+    let currentUser = JSON.parse(localStorage.getItem('x3_currentUser')) || null;
+
+    window.onload = function() {
+        if (currentUser) initMainApp();
+        else {
+            document.getElementById('auth-view').style.display = 'flex';
+            document.getElementById('main-content').style.display = 'none';
+        }
+    };
+
+    // --- AUTH FLOW ---
+    function toggleEmailForm(show) {
+        document.getElementById('auth-options').style.display = show ? 'none' : 'block';
+        document.getElementById('email-login-form').style.display = show ? 'block' : 'none';
+    }
+
+    function simulateGoogleLogin() {
+        const mockName = prompt("Simulating Google Login - Enter your Name:");
+        if(mockName) { currentUser = { name: mockName, type: 'google' }; completeLogin(); }
+    }
+
+    function handleEmailLogin(e) {
+        e.preventDefault();
+        currentUser = { name: document.getElementById('auth-name').value, type: 'email' };
+        completeLogin();
+    }
+
+    function loginAsGuest() {
+        currentUser = { name: 'Guest', type: 'guest' };
+        completeLogin();
+    }
+
+    function completeLogin() {
+        localStorage.setItem('x3_currentUser', JSON.stringify(currentUser));
+        document.getElementById('auth-view').style.display = 'none';
+        initMainApp();
+    }
+
+    function logoutUser() {
+        if(confirm("Are you sure you want to log out?")) {
+            localStorage.removeItem('x3_currentUser');
+            currentUser = null;
+            window.location.reload(); 
+        }
+    }
+
+    function initMainApp() {
+        document.getElementById('auth-view').style.display = 'none';
+        document.getElementById('main-content').style.display = 'block';
+        document.getElementById('display-username').innerText = currentUser.name;
+        
+        const icon = document.querySelector('#header-user-badge i');
+        if (currentUser.type === 'google') { icon.className = 'fab fa-google'; icon.style.color = '#DB4437'; } 
+        else if (currentUser.type === 'email') { icon.className = 'fas fa-envelope'; icon.style.color = 'var(--neon-cyan)'; } 
+        else { icon.className = 'fas fa-user-secret'; icon.style.color = '#888'; }
+    }
+
+    // --- BOOKING FLOW ---
+    function openBooking(passType) {
+        document.getElementById('book-pass').value = passType;
+        const nameInput = document.getElementById('book-name');
+        nameInput.value = (currentUser && currentUser.type !== 'guest') ? currentUser.name : '';
+
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('book-date').setAttribute('min', today);
+        document.getElementById('book-date').value = today;
+
+        document.getElementById('booking-modal').style.display = 'flex';
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+
+    async function handleBookingSubmit(e) {
+        e.preventDefault();
+        if (GOOGLE_SCRIPT_URL.includes("PASTE_YOUR")) return alert("Please configure GOOGLE_SCRIPT_URL in code.");
+        
+        const submitBtn = e.target.querySelector('.btn-submit');
+        submitBtn.innerText = "PROCESSING..."; submitBtn.disabled = true; submitBtn.style.opacity = "0.7";
+
+        const newBooking = {
+            action: "book",
+            id: 'X3-' + Math.floor(1000 + Math.random() * 9000),
+            pass: document.getElementById('book-pass').value,
+            name: document.getElementById('book-name').value,
+            phone: document.getElementById('book-phone').value,
+            date: document.getElementById('book-date').value,
+            time: document.getElementById('book-time').value,
+            timestamp: new Date().toLocaleString()
+        };
+
+        try {
+            await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST', mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newBooking)
+            });
+            document.getElementById('booking-form').reset();
+            closeModal('booking-modal');
+            alert(`Success! Confirmed.\nRef ID: ${newBooking.id}\nPlease pay at counter.`);
+        } catch (error) {
+            alert("Connection error."); console.error(error);
+        } finally {
+            submitBtn.innerText = "CONFIRM BOOKING"; submitBtn.disabled = false; submitBtn.style.opacity = "1";
+        }
+    }
+
+    // --- NEW: CUSTOMER "MY BOOKINGS" VIEWER ---
+    async function openCustomerBookings() {
+        if (currentUser.type === 'guest') {
+            alert("Guests cannot view booking history. Please log out and sign in with an Email or Google to track your passes.");
+            return;
+        }
+
+        document.getElementById('customer-history-name').innerText = currentUser.name;
+        document.getElementById('customer-bookings-modal').style.display = 'flex';
+        
+        const tbody = document.getElementById('customer-bookings-body');
+        const noMsg = document.getElementById('customer-no-bookings-msg');
+        
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Fetching your passes...</td></tr>';
+        noMsg.style.display = 'none';
+
+        try {
+            // Fetch ONLY this user's bookings by passing their name in the URL
+            const urlWithUser = GOOGLE_SCRIPT_URL + "?user=" + encodeURIComponent(currentUser.name);
+            const response = await fetch(urlWithUser);
+            const myBookings = await response.json();
+
+            tbody.innerHTML = '';
+            
+            if (myBookings.length === 0) {
+                noMsg.style.display = 'block';
+                return;
+            }
+
+            myBookings.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+            myBookings.forEach(b => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-family:'Orbitron'; color:var(--neon-cyan);">${b.id}</td>
+                    <td style="font-weight:bold;">${b.pass}</td>
+                    <td>${b.date}</td>
+                    <td style="color:var(--neon-pink);">${b.time}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        } catch (error) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red;">Failed to connect to database.</td></tr>';
+        }
+    }
+
+    // --- ADMIN FLOW ---
+    function openAdminLogin(e) {
+        e.preventDefault();
+        document.getElementById('admin-login-modal').style.display = 'flex';
+        document.getElementById('admin-error').style.display = 'none';
+    }
+
+    function handleAdminLogin(e) {
+        e.preventDefault();
+        if (document.getElementById('admin-user').value === 'aaryesh' && document.getElementById('admin-pass').value === '12345') {
+            document.getElementById('admin-login-form').reset();
+            closeModal('admin-login-modal');
+            
+            document.getElementById('main-content').style.display = 'none';
+            document.getElementById('admin-view').style.display = 'block';
+            fetchAdminBookings();
+        } else {
+            document.getElementById('admin-error').style.display = 'block';
+        }
+    }
+
+    function logoutAdmin() {
+        document.getElementById('admin-view').style.display = 'none';
+        document.getElementById('main-content').style.display = 'block';
+        window.scrollTo(0, 0);
+    }
+
+    async function fetchAdminBookings() {
+        const tbody = document.getElementById('bookings-table-body');
+        const noMsg = document.getElementById('no-bookings-msg');
+        
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Loading Data from Google Sheets...</td></tr>';
+        noMsg.style.display = 'none';
+
+        try {
+            // No ?user parameter means fetch ALL bookings
+            const response = await fetch(GOOGLE_SCRIPT_URL);
+            const bookings = await response.json();
+
+            tbody.innerHTML = '';
+            if (bookings.length === 0) { noMsg.style.display = 'block'; return; }
+
+            bookings.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+            bookings.forEach(b => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-family:'Orbitron'; color:var(--neon-cyan);">${b.id}</td>
+                    <td style="font-weight:bold;">${b.name}</td>
+                    <td>${b.phone}</td>
+                    <td>${b.pass}</td>
+                    <td>${b.date} <span style="color:#888; font-size:0.8rem; margin-left:5px;">@ ${b.time}</span></td>
+                    <td style="color:#aaa;">Counter</td>
+                    <td><button class="btn-delete" onclick="deleteBooking('${b.id}')">Delete</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        } catch (error) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:red;">Failed to load data.</td></tr>';
+        }
+    }
+
+    async function deleteBooking(id) {
+        if(confirm(`Remove booking ${id}?`)) {
+            try {
+                fetchAdminBookings(); // Show loading state immediately
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST', mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: "delete", id: id })
+                });
+                setTimeout(() => { fetchAdminBookings(); }, 1200);
+            } catch (error) { alert("Failed to delete."); }
+        }
+    }
+</script>
+</body>
+</html>
