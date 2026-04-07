@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -36,8 +35,6 @@
         .auth-card p { color: #888; font-size: 0.9rem; margin-bottom: 30px; }
         
         .btn-auth { width: 100%; padding: 15px; border-radius: 5px; font-weight: bold; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; margin-bottom: 15px; border: none; }
-        .btn-email { background: #1a1f29; color: white; border: 1px solid #333; }
-        .btn-email:hover { border-color: var(--neon-cyan); color: var(--neon-cyan); }
         .btn-guest { background: transparent; color: #888; border: 1px solid #333; }
         .btn-guest:hover { border-color: var(--neon-pink); color: var(--neon-pink); }
         
@@ -45,9 +42,8 @@
         .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #222; }
         .divider span { padding: 0 10px; }
 
-        #email-login-form { display: none; text-align: left; }
-        .back-link { color: #888; font-size: 0.8rem; cursor: pointer; display: block; text-align: center; margin-top: 15px; transition: 0.3s; }
-        .back-link:hover { color: var(--neon-cyan); }
+        .back-link { color: #666; font-size: 0.8rem; cursor: pointer; display: block; text-align: center; margin-top: 25px; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; font-weight: bold;}
+        .back-link:hover { color: var(--neon-pink); }
 
         /* HEADER & NAV */
         header { background: rgba(6, 8, 12, 0.95); backdrop-filter: blur(10px); padding: 15px 10%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; border-bottom: 2px solid var(--neon-cyan); }
@@ -132,31 +128,14 @@
             <!-- Official Google Button Container -->
             <div id="google-button-div" style="margin-bottom: 15px; display: flex; justify-content: center; width: 100%;"></div>
             
-            <button class="btn-auth btn-email" onclick="toggleEmailForm(true)">
-                <i class="fas fa-envelope"></i> Continue with Email
-            </button>
             <div class="divider"><span>OR</span></div>
             <button class="btn-auth btn-guest" onclick="loginAsGuest()">
                 <i class="fas fa-user-secret"></i> Continue as Guest
             </button>
-        </div>
 
-        <form id="email-login-form" onsubmit="handleEmailLogin(event)">
-            <div class="form-group">
-                <label>Gamer Tag / Name</label>
-                <input type="text" id="auth-name" placeholder="John Wick" required>
-            </div>
-            <div class="form-group">
-                <label>Email</label>
-                <input type="email" id="auth-email" placeholder="gamer@x3.com" required>
-            </div>
-            <div class="form-group">
-                <label>Password</label>
-                <input type="password" id="auth-pass" placeholder="••••••••" required>
-            </div>
-            <button type="submit" class="btn-submit">ENTER ARENA</button>
-            <span class="back-link" onclick="toggleEmailForm(false)"><i class="fas fa-arrow-left"></i> Back to options</span>
-        </form>
+            <!-- Admin Access Link moved to Gateway -->
+            <span class="back-link" onclick="openAdminLogin(event)"><i class="fas fa-shield-halved"></i> Admin Access</span>
+        </div>
     </div>
 </div>
 
@@ -173,7 +152,7 @@
             <div id="header-user-badge" class="user-badge">
                 <i class="fas fa-user"></i> <span id="display-username">Guest</span>
                 <button class="logout-btn" style="color:var(--neon-cyan); margin-left:15px; border-left:1px solid #444; padding-left:15px;" onclick="openCustomerBookings()">My Bookings</button>
-                <button class="logout-btn" style="color:var(--neon-pink); margin-left:10px;" onclick="logoutUser()"><i class="fas fa-sign-out-alt"></i></button>
+                <button class="logout-btn" style="color:var(--neon-pink); margin-left:10px;" onclick="logoutUser()" title="Logout"><i class="fas fa-sign-out-alt"></i></button>
             </div>
         </nav>
     </header>
@@ -267,8 +246,7 @@
     </a>
 
     <footer style="text-align:center; padding: 40px; font-size: 0.8rem; color:#444;">
-        © 2026 X3 Esports. Powered by Gaming Passion.<br>
-        <a href="#" onclick="openAdminLogin(event)" style="color:#333; text-decoration:none; margin-top:10px; display:inline-block;">Admin Access</a>
+        © 2026 X3 Esports. Powered by Gaming Passion.
     </footer>
 </div>
 
@@ -284,8 +262,8 @@
             <div class="form-group"><label>Gamer Name</label><input type="text" id="book-name" required></div>
             <div class="form-group"><label>Phone Number</label><input type="tel" id="book-phone" required></div>
             <div class="form-group" style="display:flex; gap:10px;">
-                <div style="flex:1"><label>Date</label><input type="date" id="book-date" required></div>
-                <div style="flex:1"><label>Time</label><input type="time" id="book-time" required></div>
+                <div style="flex:1"><label>Date (IST)</label><input type="date" id="book-date" required></div>
+                <div style="flex:1"><label>Arrival Time</label><input type="time" id="book-time" required></div>
             </div>
             <div class="form-group"><label>Payment Method</label><input type="text" value="Pay at Counter" readonly style="color:var(--neon-pink); border-color:#444;"></div>
             <button type="submit" class="btn-submit">CONFIRM BOOKING</button>
@@ -375,9 +353,33 @@
         }
     };
 
+    // --- UTILITY: TIME FORMATTERS (INDIAN STANDARD TIME) ---
+    function getISTDateString() {
+        // Gets 'Today' exactly in IST timezone to prevent incorrect past bookings
+        const dateIST = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+        const yyyy = dateIST.getFullYear();
+        const mm = String(dateIST.getMonth() + 1).padStart(2, '0');
+        const dd = String(dateIST.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+    }
+
+    function formatReadableDate(dateString) {
+        if (!dateString) return "";
+        const d = new Date(dateString);
+        if (isNaN(d)) return dateString; // Fallback
+        return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    function format12HourTime(timeString) {
+        if (!timeString) return "";
+        const [hourString, minute] = timeString.split(':');
+        let hour = parseInt(hourString, 10);
+        const ampm = hour >= 12 ? 'PM' : 'AM';
+        hour = hour % 12 || 12; // convert 0 to 12
+        return `${String(hour).padStart(2, '0')}:${minute} ${ampm}`;
+    }
+
     // --- AUTH FLOW ---
-    
-    // Decodes the Google JWT Token to extract User Info securely
     function decodeJwtResponse(token) {
         var base64Url = token.split('.')[1];
         var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -387,26 +389,9 @@
         return JSON.parse(jsonPayload);
     }
 
-    // Runs when Google Login is successful
     function handleGoogleCredentialResponse(response) {
         const decodedPayload = decodeJwtResponse(response.credential);
-        
-        currentUser = { 
-            name: decodedPayload.name, 
-            email: decodedPayload.email, 
-            type: 'google' 
-        };
-        completeLogin();
-    }
-
-    function toggleEmailForm(show) {
-        document.getElementById('auth-options').style.display = show ? 'none' : 'block';
-        document.getElementById('email-login-form').style.display = show ? 'block' : 'none';
-    }
-
-    function handleEmailLogin(e) {
-        e.preventDefault();
-        currentUser = { name: document.getElementById('auth-name').value, type: 'email' };
+        currentUser = { name: decodedPayload.name, email: decodedPayload.email, type: 'google' };
         completeLogin();
     }
 
@@ -435,9 +420,13 @@
         document.getElementById('display-username').innerText = currentUser.name;
         
         const icon = document.querySelector('#header-user-badge i');
-        if (currentUser.type === 'google') { icon.className = 'fab fa-google'; icon.style.color = '#DB4437'; } 
-        else if (currentUser.type === 'email') { icon.className = 'fas fa-envelope'; icon.style.color = 'var(--neon-cyan)'; } 
-        else { icon.className = 'fas fa-user-secret'; icon.style.color = '#888'; }
+        if (currentUser.type === 'google') { 
+            icon.className = 'fab fa-google'; 
+            icon.style.color = '#DB4437'; 
+        } else { 
+            icon.className = 'fas fa-user-secret'; 
+            icon.style.color = '#888'; 
+        }
     }
 
     // --- BOOKING FLOW ---
@@ -446,9 +435,10 @@
         const nameInput = document.getElementById('book-name');
         nameInput.value = (currentUser && currentUser.type !== 'guest') ? currentUser.name : '';
 
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('book-date').setAttribute('min', today);
-        document.getElementById('book-date').value = today;
+        // Restrict minimum date based on IST
+        const todayIST = getISTDateString();
+        document.getElementById('book-date').setAttribute('min', todayIST);
+        document.getElementById('book-date').value = todayIST;
 
         document.getElementById('booking-modal').style.display = 'flex';
     }
@@ -472,7 +462,8 @@
             phone: document.getElementById('book-phone').value,
             date: document.getElementById('book-date').value,
             time: document.getElementById('book-time').value,
-            timestamp: new Date().toLocaleString()
+            // Accurate IST recording for timestamp
+            timestamp: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
         };
 
         try {
@@ -494,7 +485,7 @@
     // --- CUSTOMER "MY BOOKINGS" VIEWER ---
     async function openCustomerBookings() {
         if (currentUser.type === 'guest') {
-            alert("Guests cannot view booking history. Please log out and sign in with an Email or Google to track your passes.");
+            alert("Guests cannot view booking history. Please log out and sign in with Google to track your passes.");
             return;
         }
 
@@ -526,8 +517,8 @@
                 tr.innerHTML = `
                     <td style="font-family:'Orbitron'; color:var(--neon-cyan);">${b.id}</td>
                     <td style="font-weight:bold;">${b.pass}</td>
-                    <td>${b.date}</td>
-                    <td style="color:var(--neon-pink);">${b.time}</td>
+                    <td>${formatReadableDate(b.date)}</td>
+                    <td style="color:var(--neon-pink);">${format12HourTime(b.time)}</td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -549,8 +540,11 @@
             document.getElementById('admin-login-form').reset();
             closeModal('admin-login-modal');
             
+            // Hide the auth and main view, show admin view
+            document.getElementById('auth-view').style.display = 'none';
             document.getElementById('main-content').style.display = 'none';
             document.getElementById('admin-view').style.display = 'block';
+            
             fetchAdminBookings();
         } else {
             document.getElementById('admin-error').style.display = 'block';
@@ -559,7 +553,13 @@
 
     function logoutAdmin() {
         document.getElementById('admin-view').style.display = 'none';
-        document.getElementById('main-content').style.display = 'block';
+        
+        // Return to where they belong based on session
+        if (currentUser) {
+            initMainApp();
+        } else {
+            document.getElementById('auth-view').style.display = 'flex';
+        }
         window.scrollTo(0, 0);
     }
 
@@ -586,7 +586,12 @@
                     <td style="font-weight:bold;">${b.name}</td>
                     <td>${b.phone}</td>
                     <td>${b.pass}</td>
-                    <td>${b.date} <span style="color:#888; font-size:0.8rem; margin-left:5px;">@ ${b.time}</span></td>
+                    <td>
+                        ${formatReadableDate(b.date)} 
+                        <span style="color:var(--neon-pink); font-weight:bold; font-size:0.85rem; margin-left:8px;">
+                            ${format12HourTime(b.time)}
+                        </span>
+                    </td>
                     <td style="color:#aaa;">Counter</td>
                     <td><button class="btn-delete" onclick="deleteBooking('${b.id}')">Delete</button></td>
                 `;
