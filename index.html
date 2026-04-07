@@ -57,7 +57,7 @@
             top: 0; 
             left: 0; 
             width: 100%; 
-            z-index: 5000; /* Fixed Z-index layer order */
+            z-index: 5000; 
         }
         
         .auth-card { 
@@ -121,7 +121,6 @@
         nav a { color: white; text-decoration: none; font-size: 0.8rem; font-weight: 600; transition: 0.3s; text-transform: uppercase; }
         nav a:hover { color: var(--neon-cyan); }
         
-        /* USER PROFILE BADGE */
         .user-badge { display: flex; align-items: center; gap: 10px; background: #1a1f29; padding: 5px 15px; border-radius: 50px; border: 1px solid #333; font-size: 0.8rem; font-weight: bold; }
         .user-badge i { color: var(--neon-cyan); }
         .logout-btn { color: #888; cursor: pointer; font-size: 0.8rem; font-weight: bold; border: none; background: none; transition: 0.3s; }
@@ -168,7 +167,7 @@
             height: 100%; 
             background: rgba(0,0,0,0.85); 
             backdrop-filter: blur(5px); 
-            z-index: 10000; /* FIXED: Now explicitly much higher than auth-view */
+            z-index: 10000; 
             justify-content: center; 
             align-items: center; 
         }
@@ -197,13 +196,48 @@
 
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 0.8rem; margin-bottom: 5px; color: #aaa; text-transform: uppercase; }
-        .form-group input { width: 100%; padding: 12px; background: #0a0c10; border: 1px solid #333; color: white; border-radius: 5px; font-family: 'Inter', sans-serif; color-scheme: dark; transition: border-color 0.3s;}
-        .form-group input:focus { outline: none; border-color: var(--neon-cyan); }
+        
+        /* Applied to Input AND Select Dropdowns */
+        .form-group input, .form-group select { 
+            width: 100%; 
+            padding: 12px; 
+            background: #0a0c10; 
+            border: 1px solid #333; 
+            color: white; 
+            border-radius: 5px; 
+            font-family: 'Inter', sans-serif; 
+            color-scheme: dark; 
+            transition: border-color 0.3s;
+            appearance: auto;
+        }
+        
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--neon-cyan); }
         .form-group input[readonly] { background: #1a1f29; color: var(--neon-cyan); font-weight: bold; cursor: not-allowed; border-color: #222; }
         
         .btn-submit { width: 100%; background: var(--neon-cyan); color: black; border: none; padding: 15px; font-weight: bold; font-family: 'Orbitron'; cursor: pointer; border-radius: 5px; margin-top: 10px; transition: 0.3s; }
         .btn-submit:hover:not(:disabled) { box-shadow: 0 0 15px var(--neon-cyan); transform: scale(1.02); }
-        
+
+        /* ================= TICKET SLIP UI ================= */
+        .ticket-slip {
+            background: linear-gradient(135deg, #0a0c10, #11141b);
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border: 1px solid #333;
+            border-left: 5px solid var(--neon-pink);
+            position: relative;
+        }
+        .ticket-slip::after {
+            content: "|||| ||||| || ||| ||||";
+            display: block;
+            text-align: center;
+            font-size: 1.5rem;
+            color: #444;
+            letter-spacing: 2px;
+            margin-top: 20px;
+            font-family: monospace;
+        }
+
         /* ================= DASHBOARD & ADMIN ================= */
         #admin-view { display: none; min-height: 100vh; padding: 80px 10%; background: var(--bg-dark); }
         .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #333; padding-bottom: 20px; }
@@ -233,7 +267,6 @@
         <p>Login to book your rig and secure your spot.</p>
 
         <div id="auth-options">
-            <!-- Official Google Button Container -->
             <div id="google-button-div" style="margin-bottom: 15px; display: flex; justify-content: center; width: 100%;"></div>
             
             <div class="divider"><span>OR</span></div>
@@ -241,7 +274,6 @@
                 <i class="fas fa-user-secret"></i> Continue as Guest
             </button>
 
-            <!-- Admin Access Link moved to Gateway -->
             <span class="back-link" onclick="openAdminLogin(event)"><i class="fas fa-shield-halved"></i> Admin Access</span>
         </div>
     </div>
@@ -371,7 +403,8 @@
             <div class="form-group"><label>Phone Number</label><input type="tel" id="book-phone" required></div>
             <div class="form-group" style="display:flex; gap:10px;">
                 <div style="flex:1"><label>Date (IST)</label><input type="date" id="book-date" required></div>
-                <div style="flex:1"><label>Arrival Time</label><input type="time" id="book-time" required></div>
+                <!-- 12-Hour Dropdown Select for Time instead of raw input -->
+                <div style="flex:1"><label>Arrival Time</label><select id="book-time" required></select></div>
             </div>
             <div class="form-group"><label>Payment Method</label><input type="text" value="Pay at Counter" readonly style="color:var(--neon-pink); border-color:#444;"></div>
             <button type="submit" class="btn-submit">CONFIRM BOOKING</button>
@@ -379,7 +412,44 @@
     </div>
 </div>
 
-<!-- 2. Customer "My Bookings" Modal -->
+<!-- 2. Booking Success Slip Modal -->
+<div id="confirmation-modal" class="modal-overlay">
+    <div class="modal-content" style="border: 2px dashed var(--neon-cyan);">
+        <h2 style="color:var(--neon-cyan); margin-bottom: 5px;">BOOKING CONFIRMED</h2>
+        <p style="text-align:center; color:#888; margin-top:0; font-size:0.8rem;">Screenshot this to show at the counter</p>
+        
+        <div class="ticket-slip">
+            <div style="font-size: 0.8rem; color:#aaa; font-weight:bold;">REF ID</div>
+            <div id="slip-id" style="font-family: 'Orbitron'; color:var(--neon-cyan); font-size: 1.5rem; font-weight: bold; margin-bottom: 15px;"></div>
+            
+            <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                <div>
+                    <div style="font-size: 0.7rem; color:#888;">GAMER</div>
+                    <div id="slip-name" style="font-weight:bold; color:white;"></div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-size: 0.7rem; color:#888;">PASS</div>
+                    <div id="slip-pass" style="font-weight:bold; color:var(--neon-pink);"></div>
+                </div>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; border-top: 1px dashed #333; padding-top: 15px;">
+                <div>
+                    <div style="font-size: 0.7rem; color:#888;">DATE</div>
+                    <div id="slip-date" style="font-weight:bold; color:white;"></div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-size: 0.7rem; color:#888;">TIME</div>
+                    <div id="slip-time" style="font-weight:bold; color:white;"></div>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn-submit" onclick="closeModal('confirmation-modal')" style="margin-top: 25px;"><i class="fas fa-check"></i> DONE / SCREENSHOT SAVED</button>
+    </div>
+</div>
+
+<!-- 3. Customer "My Bookings" Modal -->
 <div id="customer-bookings-modal" class="modal-overlay">
     <div class="modal-content large-modal">
         <span class="close-btn" onclick="closeModal('customer-bookings-modal')">&times;</span>
@@ -391,16 +461,14 @@
                 <thead>
                     <tr><th>Ref ID</th><th>Pass Type</th><th>Date</th><th>Time</th></tr>
                 </thead>
-                <tbody id="customer-bookings-body">
-                    <!-- Populated by JS -->
-                </tbody>
+                <tbody id="customer-bookings-body"></tbody>
             </table>
             <p id="customer-no-bookings-msg" style="text-align:center; padding: 40px; color:#555; display:none;">No active bookings found under your name.</p>
         </div>
     </div>
 </div>
 
-<!-- 3. Admin Login Modal -->
+<!-- 4. Admin Login Modal -->
 <div id="admin-login-modal" class="modal-overlay">
     <div class="modal-content" style="border-color: var(--neon-pink); box-shadow: 0 0 30px rgba(255, 0, 85, 0.2);">
         <span class="close-btn" onclick="closeModal('admin-login-modal')">&times;</span>
@@ -415,7 +483,7 @@
     </div>
 </div>
 
-<!-- 4. Admin Dashboard View -->
+<!-- 5. Admin Dashboard View -->
 <div id="admin-view">
     <div class="admin-header">
         <div>
@@ -443,28 +511,21 @@
     // =========================================================================================
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwe5K-bDYJ2Wl4cj2ow1E11XWONjSrWCr5Fyt8dStJnlEbeSreee73TggdAlqyqZAXZ/exec";
 
-    // --- BUG FIX: CLEAR OLD STUCK GUEST SESSIONS ---
-    // If a guest was previously saved into permanent localStorage, wipe it. 
-    // Guests should only be saved temporarily in sessionStorage.
+    // --- MANAGE SESSIONS ---
     let legacyLocalUser = JSON.parse(localStorage.getItem('x3_currentUser'));
     if (legacyLocalUser && legacyLocalUser.type === 'guest') {
         localStorage.removeItem('x3_currentUser');
         legacyLocalUser = null;
     }
-
-    // Determine current user: Google users load from Local, Guests load from Session
     let currentUser = legacyLocalUser || JSON.parse(sessionStorage.getItem('x3_currentUser')) || null;
 
     window.onload = function() {
+        populateTimeSlots(); // Auto-generate 30 min interval times
+        
         if (currentUser) {
             initMainApp();
         } else {
-            // Show Login View
             document.getElementById('auth-view').style.display = 'flex';
-            document.getElementById('main-content').style.display = 'none';
-            document.getElementById('admin-view').style.display = 'none';
-            
-            // Render Real Google Sign-in Button
             try {
                 google.accounts.id.initialize({
                     client_id: "1036364685174-86it6s87gsglra434rulcnmk2ijiudo4.apps.googleusercontent.com",
@@ -475,12 +536,12 @@
                     { theme: "outline", size: "large", width: "320" }  
                 );
             } catch (e) {
-                console.log("Google Login rendering issue, usually due to Adblocker or Network.");
+                console.log("Google Login block active.");
             }
         }
     };
 
-    // --- UTILITY: TIME FORMATTERS (INDIAN STANDARD TIME) ---
+    // --- UTILITY: DATE & TIME GENERATORS ---
     function getISTDateString() {
         const dateIST = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
         const yyyy = dateIST.getFullYear();
@@ -496,8 +557,31 @@
         return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
     }
 
+    // Function to generate strict 30-min block times (12hr format) into the Dropdown
+    function populateTimeSlots() {
+        const select = document.getElementById('book-time');
+        select.innerHTML = ''; 
+        for (let h = 0; h < 24; h++) {
+            for (let m = 0; m < 60; m += 30) {
+                let ampm = h >= 12 ? 'PM' : 'AM';
+                let hour12 = h % 12 || 12; // Converts 0 to 12
+                let mins = m === 0 ? '00' : '30';
+                let timeString = `${String(hour12).padStart(2, '0')}:${mins} ${ampm}`;
+                
+                let option = document.createElement('option');
+                option.value = timeString;
+                option.textContent = timeString;
+                select.appendChild(option);
+            }
+        }
+        // Set default time to something sensible (e.g., 12:00 PM)
+        select.value = "12:00 PM";
+    }
+
+    // Smart format checker for displaying time (Fallback if old database entries were 24hr)
     function format12HourTime(timeString) {
         if (!timeString) return "";
+        if (timeString.includes('AM') || timeString.includes('PM')) return timeString; // It's already our new 12hr format
         const [hourString, minute] = timeString.split(':');
         let hour = parseInt(hourString, 10);
         const ampm = hour >= 12 ? 'PM' : 'AM';
@@ -527,13 +611,11 @@
     }
 
     function completeLogin() {
-        // Fix applied: Google saves permanently, Guest saves temporarily
         if (currentUser.type === 'guest') {
             sessionStorage.setItem('x3_currentUser', JSON.stringify(currentUser));
         } else {
             localStorage.setItem('x3_currentUser', JSON.stringify(currentUser));
         }
-        
         document.getElementById('auth-view').style.display = 'none';
         initMainApp();
     }
@@ -555,11 +637,9 @@
         
         const icon = document.querySelector('#header-user-badge i');
         if (currentUser.type === 'google') { 
-            icon.className = 'fab fa-google'; 
-            icon.style.color = '#DB4437'; 
+            icon.className = 'fab fa-google'; icon.style.color = '#DB4437'; 
         } else { 
-            icon.className = 'fas fa-user-secret'; 
-            icon.style.color = '#888'; 
+            icon.className = 'fas fa-user-secret'; icon.style.color = '#888'; 
         }
     }
 
@@ -569,7 +649,6 @@
         const nameInput = document.getElementById('book-name');
         nameInput.value = (currentUser && currentUser.type !== 'guest') ? currentUser.name : '';
 
-        // Restrict minimum date based on IST
         const todayIST = getISTDateString();
         document.getElementById('book-date').setAttribute('min', todayIST);
         document.getElementById('book-date').value = todayIST;
@@ -579,7 +658,6 @@
 
     function closeModal(modalId) {
         document.getElementById(modalId).style.display = 'none';
-        // Reset specific forms cleanly on close
         if(modalId === 'admin-login-modal') {
             document.getElementById('admin-login-form').reset();
             document.getElementById('admin-error').style.display = 'none';
@@ -591,10 +669,9 @@
         if (GOOGLE_SCRIPT_URL.includes("PASTE_YOUR")) return alert("Please configure GOOGLE_SCRIPT_URL in code.");
         
         const submitBtn = e.target.querySelector('.btn-submit');
-        submitBtn.innerText = "PROCESSING..."; 
-        submitBtn.disabled = true; 
-        submitBtn.style.opacity = "0.7";
+        submitBtn.innerText = "PROCESSING..."; submitBtn.disabled = true; submitBtn.style.opacity = "0.7";
 
+        // Grab values directly. Because of our <select>, `time` is ALREADY beautifully formatted like "02:30 PM".
         const newBooking = {
             action: "book",
             id: 'X3-' + Math.floor(1000 + Math.random() * 9000),
@@ -602,7 +679,7 @@
             name: document.getElementById('book-name').value,
             phone: document.getElementById('book-phone').value,
             date: document.getElementById('book-date').value,
-            time: document.getElementById('book-time').value,
+            time: document.getElementById('book-time').value, 
             timestamp: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
         };
 
@@ -612,15 +689,24 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newBooking)
             });
+            
+            // Clean up the modal
             document.getElementById('booking-form').reset();
             closeModal('booking-modal');
-            alert(`Success! Confirmed.\nRef ID: ${newBooking.id}\nPlease pay at counter.`);
+            
+            // Populate and Show the Digital Ticket Slip
+            document.getElementById('slip-id').innerText = newBooking.id;
+            document.getElementById('slip-name').innerText = newBooking.name;
+            document.getElementById('slip-pass').innerText = newBooking.pass.split(' - ')[0]; // Show just the pass name
+            document.getElementById('slip-date').innerText = formatReadableDate(newBooking.date);
+            document.getElementById('slip-time').innerText = newBooking.time;
+            
+            document.getElementById('confirmation-modal').style.display = 'flex';
+
         } catch (error) {
             alert("Connection error."); console.error(error);
         } finally {
-            submitBtn.innerText = "CONFIRM BOOKING"; 
-            submitBtn.disabled = false; 
-            submitBtn.style.opacity = "1";
+            submitBtn.innerText = "CONFIRM BOOKING"; submitBtn.disabled = false; submitBtn.style.opacity = "1";
         }
     }
 
@@ -658,7 +744,7 @@
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td style="font-family:'Orbitron'; color:var(--neon-cyan);">${b.id}</td>
-                    <td style="font-weight:bold;">${b.pass}</td>
+                    <td style="font-weight:bold;">${b.pass.split(' - ')[0]}</td>
                     <td>${formatReadableDate(b.date)}</td>
                     <td style="color:var(--neon-pink); font-weight:bold;">${format12HourTime(b.time)}</td>
                 `;
@@ -672,8 +758,6 @@
     // --- ADMIN DASHBOARD FLOW ---
     function openAdminLogin(e) {
         e.preventDefault();
-        // Since modal-overlay z-index is 10000 and auth-view is 5000, 
-        // this will perfectly pop up over the login gateway now.
         document.getElementById('admin-login-modal').style.display = 'flex';
         document.getElementById('admin-error').style.display = 'none';
         document.getElementById('admin-user').focus();
@@ -686,16 +770,12 @@
 
         if (user === 'aaryesh' && pass === '12345') {
             closeModal('admin-login-modal');
-            
-            // Hide the auth and main view, show admin view completely
             document.getElementById('auth-view').style.display = 'none';
             document.getElementById('main-content').style.display = 'none';
             document.getElementById('admin-view').style.display = 'block';
-            
             fetchAdminBookings();
         } else {
             document.getElementById('admin-error').style.display = 'block';
-            // Simple shake animation effect for error
             const form = document.getElementById('admin-login-form');
             form.style.transform = 'translateX(-5px)';
             setTimeout(() => form.style.transform = 'translateX(5px)', 100);
@@ -705,13 +785,7 @@
 
     function logoutAdmin() {
         document.getElementById('admin-view').style.display = 'none';
-        
-        // Logic to return where they belong cleanly
-        if (currentUser) {
-            initMainApp();
-        } else {
-            document.getElementById('auth-view').style.display = 'flex';
-        }
+        if (currentUser) { initMainApp(); } else { document.getElementById('auth-view').style.display = 'flex'; }
         window.scrollTo(0, 0);
     }
 
@@ -720,9 +794,7 @@
         const noMsg = document.getElementById('no-bookings-msg');
         const refreshBtn = document.querySelector('.btn-refresh i');
         
-        // Spin the refresh icon for nice UI feedback
         if(refreshBtn) refreshBtn.classList.add('fa-spin');
-        
         tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 30px;">Loading Data securely from Google Sheets...</td></tr>';
         noMsg.style.display = 'none';
 
@@ -758,7 +830,6 @@
         } catch (error) {
             tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:red;">Failed to fetch live database. Check Network or Link.</td></tr>';
         } finally {
-            // Stop spinning the icon
             if(refreshBtn) refreshBtn.classList.remove('fa-spin');
         }
     }
@@ -766,20 +837,16 @@
     async function deleteBooking(id) {
         if(confirm(`SYSTEM OVERRIDE: Are you sure you want to permanently delete the booking ${id}?`)) {
             try {
-                // Immediately show processing state to admin
                 document.getElementById('bookings-table-body').innerHTML = `<tr><td colspan="7" style="text-align:center;">Executing deletion protocol for ${id}...</td></tr>`;
-                
                 await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST', mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ action: "delete", id: id })
                 });
-                
-                // Allow Google sheets to finish running, then refresh automatically
                 setTimeout(() => { fetchAdminBookings(); }, 1200);
             } catch (error) { 
                 alert("Critical Error: Failed to execute deletion request."); 
-                fetchAdminBookings(); // Recover display
+                fetchAdminBookings(); 
             }
         }
     }
