@@ -1,13 +1,17 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>X3 ESports | Pimple Saudagar's Premier Arena</title>
+    
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;500;800&display=swap" rel="stylesheet">
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Identity Services (For Real Google Login) -->
+    <script src="https://accounts.google.com/gsi/client"></script>
     
     <style>
         :root {
@@ -32,8 +36,6 @@
         .auth-card p { color: #888; font-size: 0.9rem; margin-bottom: 30px; }
         
         .btn-auth { width: 100%; padding: 15px; border-radius: 5px; font-weight: bold; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; margin-bottom: 15px; border: none; }
-        .btn-google { background: #fff; color: #000; }
-        .btn-google:hover { background: #eee; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,255,255,0.2); }
         .btn-email { background: #1a1f29; color: white; border: 1px solid #333; }
         .btn-email:hover { border-color: var(--neon-cyan); color: var(--neon-cyan); }
         .btn-guest { background: transparent; color: #888; border: 1px solid #333; }
@@ -127,9 +129,9 @@
         <p>Login to book your rig and secure your spot.</p>
 
         <div id="auth-options">
-            <button class="btn-auth btn-google" onclick="simulateGoogleLogin()">
-                <i class="fab fa-google" style="color:#DB4437;"></i> Continue with Google
-            </button>
+            <!-- Official Google Button Container -->
+            <div id="google-button-div" style="margin-bottom: 15px; display: flex; justify-content: center; width: 100%;"></div>
+            
             <button class="btn-auth btn-email" onclick="toggleEmailForm(true)">
                 <i class="fas fa-envelope"></i> Continue with Email
             </button>
@@ -170,7 +172,6 @@
             
             <div id="header-user-badge" class="user-badge">
                 <i class="fas fa-user"></i> <span id="display-username">Guest</span>
-                <!-- NEW: My Bookings Button -->
                 <button class="logout-btn" style="color:var(--neon-cyan); margin-left:15px; border-left:1px solid #444; padding-left:15px;" onclick="openCustomerBookings()">My Bookings</button>
                 <button class="logout-btn" style="color:var(--neon-pink); margin-left:10px;" onclick="logoutUser()"><i class="fas fa-sign-out-alt"></i></button>
             </div>
@@ -183,7 +184,6 @@
         <a href="#pricing" class="btn-primary">VIEW RATES</a>
     </section>
 
-    <!-- ... (Arena, Pricing, Cafe, FAQ, Contact remain exactly the same visually) ... -->
     <section id="arena">
         <h2 style="text-align:center">The Gear</h2>
         <div class="grid-3">
@@ -215,6 +215,57 @@
         </div>
     </section>
 
+    <section id="cafe">
+        <h2 style="text-align:center">Sniper's Cafe</h2>
+        <div class="grid-3">
+            <div>
+                <div class="menu-row"><span>Masala Maggi</span><span>₹60</span></div>
+                <div class="menu-row"><span>Cheese Nachos</span><span>₹90</span></div>
+                <div class="menu-row"><span>Cold Coffee</span><span>₹70</span></div>
+            </div>
+            <div>
+                <div class="menu-row"><span>Red Bull</span><span>₹120</span></div>
+                <div class="menu-row"><span>Sandwich</span><span>₹85</span></div>
+                <div class="menu-row"><span>Iced Tea</span><span>₹50</span></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="faq">
+        <h2 style="text-align:center">Community & Info</h2>
+        <div class="grid-3">
+            <div class="faq-box">
+                <h4>Own Gear?</h4>
+                <p>Yes, you can plug in your own mouse and keyboard.</p>
+            </div>
+            <div class="faq-box">
+                <h4>Tournaments?</h4>
+                <p>Monthly Valorant and FIFA cups held every 2nd Sunday.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact">
+        <div class="contact-flex">
+            <div style="flex:1">
+                <h2>Find Us</h2>
+                <p><strong>X3 Esports Lounge</strong></p>
+                <p>5th Floor, Spot 18 Mall, Sai Chowk,<br>Pimple Saudagar, Pune 411017</p>
+                <p>Phone: +91 98XXX XXXXX</p>
+                <p>Open: 11 AM - 11 PM (Weekends till 6 AM)</p>
+            </div>
+            <div class="map-frame">
+                <iframe 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3781.424844621577!2d73.79156347521568!3d18.59995166674393!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc2b965c23bc4ef%3A0xefe1a4be20c36b5a!2sSpot%2018!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin" 
+                    width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+            </div>
+        </div>
+    </section>
+
+    <a href="https://wa.me/9198XXXXXXXX" class="wa-float" target="_blank">
+        <i class="fab fa-whatsapp" style="font-size: 1.5rem; margin-right: 8px;"></i> WhatsApp Us
+    </a>
+
     <footer style="text-align:center; padding: 40px; font-size: 0.8rem; color:#444;">
         © 2026 X3 Esports. Powered by Gaming Passion.<br>
         <a href="#" onclick="openAdminLogin(event)" style="color:#333; text-decoration:none; margin-top:10px; display:inline-block;">Admin Access</a>
@@ -242,7 +293,7 @@
     </div>
 </div>
 
-<!-- 2. Customer "My Bookings" Modal (NEW) -->
+<!-- 2. Customer "My Bookings" Modal -->
 <div id="customer-bookings-modal" class="modal-overlay">
     <div class="modal-content large-modal">
         <span class="close-btn" onclick="closeModal('customer-bookings-modal')">&times;</span>
@@ -300,28 +351,57 @@
     // =========================================================================================
     // ⚠️ IMPORTANT: Paste your deployed Google Web App URL here!
     // =========================================================================================
-    const GOOGLE_SCRIPT_URL = "PASTE_YOUR_GOOGLE_WEB_APP_URL_HERE";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwe5K-bDYJ2Wl4cj2ow1E11XWONjSrWCr5Fyt8dStJnlEbeSreee73TggdAlqyqZAXZ/exec";
 
     // --- STATE MANAGEMENT ---
     let currentUser = JSON.parse(localStorage.getItem('x3_currentUser')) || null;
 
     window.onload = function() {
-        if (currentUser) initMainApp();
-        else {
+        if (currentUser) {
+            initMainApp();
+        } else {
             document.getElementById('auth-view').style.display = 'flex';
             document.getElementById('main-content').style.display = 'none';
+            
+            // --- INITIALIZE REAL GOOGLE SIGN-IN ---
+            google.accounts.id.initialize({
+                client_id: "1036364685174-86it6s87gsglra434rulcnmk2ijiudo4.apps.googleusercontent.com",
+                callback: handleGoogleCredentialResponse
+            });
+            google.accounts.id.renderButton(
+                document.getElementById("google-button-div"),
+                { theme: "outline", size: "large", width: "320" }  
+            );
         }
     };
 
     // --- AUTH FLOW ---
+    
+    // Decodes the Google JWT Token to extract User Info securely
+    function decodeJwtResponse(token) {
+        var base64Url = token.split('.')[1];
+        var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+    }
+
+    // Runs when Google Login is successful
+    function handleGoogleCredentialResponse(response) {
+        const decodedPayload = decodeJwtResponse(response.credential);
+        
+        currentUser = { 
+            name: decodedPayload.name, 
+            email: decodedPayload.email, 
+            type: 'google' 
+        };
+        completeLogin();
+    }
+
     function toggleEmailForm(show) {
         document.getElementById('auth-options').style.display = show ? 'none' : 'block';
         document.getElementById('email-login-form').style.display = show ? 'block' : 'none';
-    }
-
-    function simulateGoogleLogin() {
-        const mockName = prompt("Simulating Google Login - Enter your Name:");
-        if(mockName) { currentUser = { name: mockName, type: 'google' }; completeLogin(); }
     }
 
     function handleEmailLogin(e) {
@@ -411,7 +491,7 @@
         }
     }
 
-    // --- NEW: CUSTOMER "MY BOOKINGS" VIEWER ---
+    // --- CUSTOMER "MY BOOKINGS" VIEWER ---
     async function openCustomerBookings() {
         if (currentUser.type === 'guest') {
             alert("Guests cannot view booking history. Please log out and sign in with an Email or Google to track your passes.");
@@ -428,7 +508,6 @@
         noMsg.style.display = 'none';
 
         try {
-            // Fetch ONLY this user's bookings by passing their name in the URL
             const urlWithUser = GOOGLE_SCRIPT_URL + "?user=" + encodeURIComponent(currentUser.name);
             const response = await fetch(urlWithUser);
             const myBookings = await response.json();
@@ -492,7 +571,6 @@
         noMsg.style.display = 'none';
 
         try {
-            // No ?user parameter means fetch ALL bookings
             const response = await fetch(GOOGLE_SCRIPT_URL);
             const bookings = await response.json();
 
@@ -522,7 +600,7 @@
     async function deleteBooking(id) {
         if(confirm(`Remove booking ${id}?`)) {
             try {
-                fetchAdminBookings(); // Show loading state immediately
+                fetchAdminBookings(); 
                 await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST', mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
