@@ -400,10 +400,22 @@
         <form id="booking-form" onsubmit="handleBookingSubmit(event)">
             <div class="form-group"><label>Selected Pass</label><input type="text" id="book-pass" readonly></div>
             <div class="form-group"><label>Gamer Name</label><input type="text" id="book-name" required></div>
-            <div class="form-group"><label>Phone Number</label><input type="tel" id="book-phone" required></div>
+            
+            <!-- PHONE NUMBER INPUT FIXED HERE -->
+            <div class="form-group">
+                <label>Phone Number</label>
+                <input type="tel" id="book-phone" 
+                    placeholder="e.g. 9876543210" 
+                    maxlength="10" 
+                    pattern="\d{10}" 
+                    title="Please enter exactly 10 digits" 
+                    oninput="this.value = this.value.replace(/\D/g, '')" 
+                    required>
+            </div>
+
             <div class="form-group" style="display:flex; gap:10px;">
                 <div style="flex:1"><label>Date (IST)</label><input type="date" id="book-date" required></div>
-                <!-- 12-Hour Dropdown Select for Time instead of raw input -->
+                <!-- 12-Hour Dropdown Select for Time -->
                 <div style="flex:1"><label>Arrival Time</label><select id="book-time" required></select></div>
             </div>
             <div class="form-group"><label>Payment Method</label><input type="text" value="Pay at Counter" readonly style="color:var(--neon-pink); border-color:#444;"></div>
