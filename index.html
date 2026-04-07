@@ -241,7 +241,7 @@
         /* ================= DASHBOARD & ADMIN ================= */
         #admin-view { display: none; min-height: 100vh; padding: 80px 10%; background: var(--bg-dark); }
         .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #333; padding-bottom: 20px; }
-        .admin-controls { display: flex; gap: 15px; }
+        .admin-controls { display: flex; gap: 15px; flex-wrap: wrap; }
         
         .admin-table-container { overflow-x: auto; max-height: 60vh; }
         table { width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 10px; overflow: hidden; }
@@ -255,7 +255,10 @@
         .btn-refresh { background: rgba(0,242,255,0.1); color: var(--neon-cyan); border: 1px solid var(--neon-cyan); padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; display: flex; align-items: center; gap: 8px; }
         .btn-refresh:hover { background: var(--neon-cyan); color: black; }
 
-        @media (max-width: 768px) { .hero h1 { font-size: 2.5rem; } header { flex-direction: column; gap: 15px; } .nav-links { flex-wrap: wrap; justify-content: center; } .admin-header { flex-direction: column; gap: 15px; text-align: center;} }
+        .btn-secondary { background: transparent; color: #aaa; border: 1px solid #555; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; display: flex; align-items: center; gap: 8px;}
+        .btn-secondary:hover { background: #1a1f29; color: white; border-color: white;}
+
+        @media (max-width: 768px) { .hero h1 { font-size: 2.5rem; } header { flex-direction: column; gap: 15px; } .nav-links { flex-wrap: wrap; justify-content: center; } .admin-header { flex-direction: column; gap: 15px; text-align: center;} .admin-controls { justify-content: center; } }
     </style>
 </head>
 <body>
@@ -401,7 +404,6 @@
             <div class="form-group"><label>Selected Pass</label><input type="text" id="book-pass" readonly></div>
             <div class="form-group"><label>Gamer Name</label><input type="text" id="book-name" required></div>
             
-            <!-- PHONE NUMBER INPUT FIXED HERE -->
             <div class="form-group">
                 <label>Phone Number</label>
                 <input type="tel" id="book-phone" 
@@ -487,22 +489,39 @@
         <h2 style="color: var(--neon-pink);">System Override</h2>
         <p style="text-align:center; color:#888; font-size:0.8rem; margin-bottom:25px;">Staff access portal. Unauthorized entry logged.</p>
         <form id="admin-login-form" onsubmit="handleAdminLogin(event)">
-            <div class="form-group"><label>Username</label><input type="text" id="admin-user" placeholder="Admin ID" required></div>
-            <div class="form-group"><label>Password</label><input type="password" id="admin-pass" placeholder="••••••••" required></div>
+            <div class="form-group"><label>Admin Username</label><input type="text" id="admin-user" placeholder="e.g. Neel" required></div>
+            <div class="form-group"><label>Admin Password</label><input type="password" id="admin-pass" placeholder="••••••••" required></div>
             <p id="admin-error" style="color:var(--neon-pink); font-size:0.85rem; text-align:center; display:none; background: rgba(255,0,85,0.1); padding: 10px; border-radius: 5px;">Access Denied. Invalid credentials.</p>
             <button type="submit" class="btn-submit" style="background:var(--neon-pink); color:white;">AUTHENTICATE</button>
         </form>
     </div>
 </div>
 
-<!-- 5. Admin Dashboard View -->
+<!-- 5. Admin Change Password Modal -->
+<div id="admin-password-modal" class="modal-overlay">
+    <div class="modal-content" style="border-color: white;">
+        <span class="close-btn" onclick="closeModal('admin-password-modal')">&times;</span>
+        <h2 style="color: white;">Update <span style="color:var(--neon-cyan)">Key</span></h2>
+        <p style="text-align:center; color:#888; font-size:0.8rem; margin-bottom:25px;">Change the access key for: <strong id="pass-change-username" style="color:white; text-transform:uppercase;"></strong></p>
+        <form id="admin-password-form" onsubmit="handlePasswordChange(event)">
+            <div class="form-group"><label>Current Password</label><input type="password" id="cp-current" required></div>
+            <div class="form-group"><label>New Password</label><input type="password" id="cp-new" required></div>
+            <div class="form-group"><label>Confirm New Password</label><input type="password" id="cp-confirm" required></div>
+            <p id="cp-error" style="color:var(--neon-pink); font-size:0.85rem; text-align:center; display:none; background: rgba(255,0,85,0.1); padding: 10px; border-radius: 5px;"></p>
+            <button type="submit" class="btn-submit" style="background:white; color:black;">SAVE NEW KEY</button>
+        </form>
+    </div>
+</div>
+
+<!-- 6. Admin Dashboard View -->
 <div id="admin-view">
     <div class="admin-header">
         <div>
             <h2>Admin <span style="color:var(--neon-cyan)">Dashboard</span></h2>
-            <p style="color:#888; font-size:0.9rem;">Manage incoming reservations securely.</p>
+            <p style="color:#888; font-size:0.9rem;">Logged in as: <strong id="admin-active-user" style="color:white; text-transform:uppercase;"></strong></p>
         </div>
         <div class="admin-controls">
+            <button class="btn-secondary" onclick="openPasswordChangeModal()"><i class="fas fa-key"></i> Update Key</button>
             <button class="btn-refresh" onclick="fetchAdminBookings()"><i class="fas fa-sync-alt"></i> Refresh Data</button>
             <button class="btn-delete" onclick="logoutAdmin()" style="border-color:#888; color:#888; background: transparent;">EXIT ADMIN</button>
         </div>
@@ -523,7 +542,7 @@
     // =========================================================================================
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwe5K-bDYJ2Wl4cj2ow1E11XWONjSrWCr5Fyt8dStJnlEbeSreee73TggdAlqyqZAXZ/exec";
 
-    // --- MANAGE SESSIONS ---
+    // --- MANAGE USER SESSIONS ---
     let legacyLocalUser = JSON.parse(localStorage.getItem('x3_currentUser'));
     if (legacyLocalUser && legacyLocalUser.type === 'guest') {
         localStorage.removeItem('x3_currentUser');
@@ -531,7 +550,22 @@
     }
     let currentUser = legacyLocalUser || JSON.parse(sessionStorage.getItem('x3_currentUser')) || null;
 
+    // --- MANAGE ADMIN CREDENTIALS ---
+    // Sets up default passwords for "neel" and "aaryesh" if they don't exist yet
+    function initAdminCredentials() {
+        let creds = JSON.parse(localStorage.getItem('x3_admin_creds'));
+        if (!creds) {
+            creds = {
+                'neel': '12345',
+                'aaryesh': '12345'
+            };
+            localStorage.setItem('x3_admin_creds', JSON.stringify(creds));
+        }
+    }
+    let currentAdmin = null; // Stores which admin is currently logged in
+
     window.onload = function() {
+        initAdminCredentials(); // Setup admin system
         populateTimeSlots(); // Auto-generate 30 min interval times
         
         if (currentUser) {
@@ -569,14 +603,13 @@
         return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
     }
 
-    // Function to generate strict 30-min block times (12hr format) into the Dropdown
     function populateTimeSlots() {
         const select = document.getElementById('book-time');
         select.innerHTML = ''; 
         for (let h = 0; h < 24; h++) {
             for (let m = 0; m < 60; m += 30) {
                 let ampm = h >= 12 ? 'PM' : 'AM';
-                let hour12 = h % 12 || 12; // Converts 0 to 12
+                let hour12 = h % 12 || 12; 
                 let mins = m === 0 ? '00' : '30';
                 let timeString = `${String(hour12).padStart(2, '0')}:${mins} ${ampm}`;
                 
@@ -586,14 +619,12 @@
                 select.appendChild(option);
             }
         }
-        // Set default time to something sensible (e.g., 12:00 PM)
         select.value = "12:00 PM";
     }
 
-    // Smart format checker for displaying time (Fallback if old database entries were 24hr)
     function format12HourTime(timeString) {
         if (!timeString) return "";
-        if (timeString.includes('AM') || timeString.includes('PM')) return timeString; // It's already our new 12hr format
+        if (timeString.includes('AM') || timeString.includes('PM')) return timeString; 
         const [hourString, minute] = timeString.split(':');
         let hour = parseInt(hourString, 10);
         const ampm = hour >= 12 ? 'PM' : 'AM';
@@ -674,6 +705,10 @@
             document.getElementById('admin-login-form').reset();
             document.getElementById('admin-error').style.display = 'none';
         }
+        if(modalId === 'admin-password-modal') {
+            document.getElementById('admin-password-form').reset();
+            document.getElementById('cp-error').style.display = 'none';
+        }
     }
 
     async function handleBookingSubmit(e) {
@@ -683,7 +718,6 @@
         const submitBtn = e.target.querySelector('.btn-submit');
         submitBtn.innerText = "PROCESSING..."; submitBtn.disabled = true; submitBtn.style.opacity = "0.7";
 
-        // Grab values directly. Because of our <select>, `time` is ALREADY beautifully formatted like "02:30 PM".
         const newBooking = {
             action: "book",
             id: 'X3-' + Math.floor(1000 + Math.random() * 9000),
@@ -702,14 +736,12 @@
                 body: JSON.stringify(newBooking)
             });
             
-            // Clean up the modal
             document.getElementById('booking-form').reset();
             closeModal('booking-modal');
             
-            // Populate and Show the Digital Ticket Slip
             document.getElementById('slip-id').innerText = newBooking.id;
             document.getElementById('slip-name').innerText = newBooking.name;
-            document.getElementById('slip-pass').innerText = newBooking.pass.split(' - ')[0]; // Show just the pass name
+            document.getElementById('slip-pass').innerText = newBooking.pass.split(' - ')[0]; 
             document.getElementById('slip-date').innerText = formatReadableDate(newBooking.date);
             document.getElementById('slip-time').innerText = newBooking.time;
             
@@ -722,7 +754,6 @@
         }
     }
 
-    // --- CUSTOMER "MY BOOKINGS" VIEWER ---
     async function openCustomerBookings() {
         if (currentUser.type === 'guest') {
             alert("Guests cannot view booking history. Please log out and sign in with Google to track your passes securely.");
@@ -767,7 +798,7 @@
         }
     }
 
-    // --- ADMIN DASHBOARD FLOW ---
+    // --- ADMIN DASHBOARD & PASSWORD FLOW ---
     function openAdminLogin(e) {
         e.preventDefault();
         document.getElementById('admin-login-modal').style.display = 'flex';
@@ -777,14 +808,24 @@
 
     function handleAdminLogin(e) {
         e.preventDefault();
-        const user = document.getElementById('admin-user').value;
-        const pass = document.getElementById('admin-pass').value;
+        // Convert input to lowercase to make it case-insensitive
+        const inputUser = document.getElementById('admin-user').value.toLowerCase().trim();
+        const inputPass = document.getElementById('admin-pass').value;
 
-        if (user === 'aaryesh' && pass === '12345') {
+        // Fetch latest saved passwords
+        const savedCreds = JSON.parse(localStorage.getItem('x3_admin_creds'));
+
+        // Check if the user exists in our system (neel or aaryesh) AND password matches
+        if (savedCreds.hasOwnProperty(inputUser) && savedCreds[inputUser] === inputPass) {
+            currentAdmin = inputUser; // Remember who logged in
+            
             closeModal('admin-login-modal');
             document.getElementById('auth-view').style.display = 'none';
             document.getElementById('main-content').style.display = 'none';
             document.getElementById('admin-view').style.display = 'block';
+            
+            document.getElementById('admin-active-user').innerText = currentAdmin; // Display name
+            
             fetchAdminBookings();
         } else {
             document.getElementById('admin-error').style.display = 'block';
@@ -795,8 +836,55 @@
         }
     }
 
+    // Password Update Functions
+    function openPasswordChangeModal() {
+        document.getElementById('pass-change-username').innerText = currentAdmin;
+        document.getElementById('admin-password-modal').style.display = 'flex';
+        document.getElementById('cp-error').style.display = 'none';
+    }
+
+    function handlePasswordChange(e) {
+        e.preventDefault();
+        
+        const cpCurrent = document.getElementById('cp-current').value;
+        const cpNew = document.getElementById('cp-new').value;
+        const cpConfirm = document.getElementById('cp-confirm').value;
+        const errorBox = document.getElementById('cp-error');
+        
+        const savedCreds = JSON.parse(localStorage.getItem('x3_admin_creds'));
+
+        // Verify Current Password
+        if(savedCreds[currentAdmin] !== cpCurrent) {
+            errorBox.innerText = "Current Password is incorrect!";
+            errorBox.style.display = 'block';
+            return;
+        }
+
+        // Verify New Password Match
+        if(cpNew !== cpConfirm) {
+            errorBox.innerText = "New Passwords do not match!";
+            errorBox.style.display = 'block';
+            return;
+        }
+        
+        // Prevent setting empty password
+        if(cpNew.trim() === '') {
+            errorBox.innerText = "Password cannot be empty!";
+            errorBox.style.display = 'block';
+            return;
+        }
+
+        // Apply Change and Save
+        savedCreds[currentAdmin] = cpNew;
+        localStorage.setItem('x3_admin_creds', JSON.stringify(savedCreds));
+        
+        alert("Success! Your password has been updated. Use the new password next time you log in.");
+        closeModal('admin-password-modal');
+    }
+
     function logoutAdmin() {
         document.getElementById('admin-view').style.display = 'none';
+        currentAdmin = null; // Clear active admin
         if (currentUser) { initMainApp(); } else { document.getElementById('auth-view').style.display = 'flex'; }
         window.scrollTo(0, 0);
     }
