@@ -13,6 +13,7 @@
     <script src="https://accounts.google.com/gsi/client"></script>
     
     <style>
+        /* ================= VARIABLES & BASE ================= */
         :root {
             --bg-dark: #06080c;
             --card-bg: #11141b;
@@ -22,21 +23,76 @@
             --glass: rgba(255, 255, 255, 0.03);
         }
 
-        * { box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-dark); color: var(--text-main); margin: 0; scroll-behavior: smooth; }
-
-        h1, h2, h3, .logo { font-family: 'Orbitron', sans-serif; text-transform: uppercase; letter-spacing: 2px; }
-        section { padding: 80px 10%; border-bottom: 1px solid #1a1f29; }
+        * { 
+            box-sizing: border-box; 
+        }
         
-        /* AUTHENTICATION VIEW */
-        #auth-view { display: flex; min-height: 100vh; justify-content: center; align-items: center; background: linear-gradient(rgba(6,8,12,0.9), rgba(6,8,12,0.9)), url('https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=2070') center/cover; position: fixed; top: 0; left: 0; width: 100%; z-index: 20000; }
-        .auth-card { background: var(--card-bg); padding: 50px 40px; border-radius: 15px; border: 1px solid var(--neon-cyan); width: 90%; max-width: 400px; box-shadow: 0 0 40px rgba(0, 242, 255, 0.15); text-align: center; position: relative; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--bg-dark); 
+            color: var(--text-main); 
+            margin: 0; 
+            scroll-behavior: smooth; 
+        }
+
+        h1, h2, h3, .logo { 
+            font-family: 'Orbitron', sans-serif; 
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+        }
+        
+        section { 
+            padding: 80px 10%; 
+            border-bottom: 1px solid #1a1f29; 
+        }
+        
+        /* ================= AUTHENTICATION VIEW ================= */
+        #auth-view { 
+            display: flex; 
+            min-height: 100vh; 
+            justify-content: center; 
+            align-items: center; 
+            background: linear-gradient(rgba(6,8,12,0.92), rgba(6,8,12,0.92)), url('https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=2070') center/cover; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            z-index: 5000; /* Fixed Z-index layer order */
+        }
+        
+        .auth-card { 
+            background: var(--card-bg); 
+            padding: 50px 40px; 
+            border-radius: 15px; 
+            border: 1px solid var(--neon-cyan); 
+            width: 90%; 
+            max-width: 400px; 
+            box-shadow: 0 0 40px rgba(0, 242, 255, 0.15); 
+            text-align: center; 
+            position: relative; 
+        }
+        
         .auth-card .logo { font-size: 2.2rem; margin-bottom: 10px; }
         .auth-card p { color: #888; font-size: 0.9rem; margin-bottom: 30px; }
         
-        .btn-auth { width: 100%; padding: 15px; border-radius: 5px; font-weight: bold; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; margin-bottom: 15px; border: none; }
+        .btn-auth { 
+            width: 100%; 
+            padding: 15px; 
+            border-radius: 5px; 
+            font-weight: bold; 
+            font-size: 1rem; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 10px; 
+            transition: 0.3s; 
+            margin-bottom: 15px; 
+            border: none; 
+        }
+        
         .btn-guest { background: transparent; color: #888; border: 1px solid #333; }
-        .btn-guest:hover { border-color: var(--neon-pink); color: var(--neon-pink); }
+        .btn-guest:hover { border-color: var(--neon-pink); color: var(--neon-pink); background: rgba(255,0,85,0.05); }
         
         .divider { display: flex; align-items: center; margin: 20px 0; color: #555; font-size: 0.8rem; font-weight: bold; }
         .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #222; }
@@ -45,10 +101,22 @@
         .back-link { color: #666; font-size: 0.8rem; cursor: pointer; display: block; text-align: center; margin-top: 25px; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; font-weight: bold;}
         .back-link:hover { color: var(--neon-pink); }
 
-        /* HEADER & NAV */
-        header { background: rgba(6, 8, 12, 0.95); backdrop-filter: blur(10px); padding: 15px 10%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; border-bottom: 2px solid var(--neon-cyan); }
+        /* ================= HEADER & NAV ================= */
+        header { 
+            background: rgba(6, 8, 12, 0.95); 
+            backdrop-filter: blur(10px); 
+            padding: 15px 10%; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000; 
+            border-bottom: 2px solid var(--neon-cyan); 
+        }
         .logo { font-size: 1.6rem; color: var(--text-main); }
         .logo span { color: var(--neon-cyan); }
+        
         .nav-links { display: flex; align-items: center; gap: 20px; }
         nav a { color: white; text-decoration: none; font-size: 0.8rem; font-weight: 600; transition: 0.3s; text-transform: uppercase; }
         nav a:hover { color: var(--neon-cyan); }
@@ -59,17 +127,18 @@
         .logout-btn { color: #888; cursor: pointer; font-size: 0.8rem; font-weight: bold; border: none; background: none; transition: 0.3s; }
         .logout-btn:hover { color: white; }
 
-        /* MAIN CONTENT - Hidden initially */
         #main-content { display: none; }
 
-        /* HERO SECTION & CARDS */
+        /* ================= HERO & CARDS ================= */
         .hero { height: 80vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=2070') center/cover; }
         .hero h1 { font-size: 4rem; margin-bottom: 10px; text-shadow: 0 0 20px var(--neon-cyan); }
         .hero p { font-size: 1.2rem; color: var(--neon-cyan); margin-bottom: 30px; }
+        
         .btn-primary { background:var(--neon-cyan); color:black; padding:15px 40px; border-radius:5px; font-weight:800; text-decoration:none; border:none; cursor:pointer; font-family: 'Orbitron', sans-serif; transition: 0.3s; }
         .btn-primary:hover { box-shadow: 0 0 15px var(--neon-cyan); transform: scale(1.05); }
 
         .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+        
         .card { background: var(--card-bg); padding: 30px; border-radius: 15px; border: 1px solid #222; transition: 0.4s; cursor: pointer; position: relative; overflow: hidden; }
         .card:hover { border-color: var(--neon-cyan); transform: translateY(-10px); box-shadow: 0 10px 30px rgba(0, 242, 255, 0.1); }
         .card.bookable::after { content: 'CLICK TO BOOK'; position: absolute; bottom: -40px; left: 0; width: 100%; background: var(--neon-cyan); color: black; text-align: center; padding: 10px 0; font-weight: bold; transition: 0.3s; font-family: 'Orbitron', sans-serif; }
@@ -80,40 +149,79 @@
         .featured-card:hover { border-color: var(--neon-pink); box-shadow: 0 10px 30px rgba(255, 0, 85, 0.15); }
         .featured-card.bookable::after { background: var(--neon-pink); }
 
-        /* CAFE & MISC */
+        /* ================= CAFE & MISC ================= */
         .menu-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #222; }
         .menu-row span:first-child { color: var(--neon-cyan); font-weight: 600; }
         .faq-box { background: var(--glass); padding: 20px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid var(--neon-pink); }
         .contact-flex { display: flex; gap: 40px; flex-wrap: wrap; }
         .map-frame { flex: 1; min-width: 300px; height: 350px; border-radius: 15px; overflow: hidden; border: 1px solid #333; }
-        .wa-float { position: fixed; bottom: 30px; right: 30px; background: #25d366; color: white; padding: 15px 25px; border-radius: 50px; text-decoration: none; font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.3); z-index: 9999; display: flex; align-items: center; }
+        .wa-float { position: fixed; bottom: 30px; right: 30px; background: #25d366; color: white; padding: 15px 25px; border-radius: 50px; text-decoration: none; font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.3); z-index: 4000; display: flex; align-items: center; transition: transform 0.3s; }
+        .wa-float:hover { transform: scale(1.05); }
 
-        /* MODALS, FORMS & TABLES */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 10000; justify-content: center; align-items: center; }
-        .modal-content { background: var(--card-bg); padding: 40px; border-radius: 15px; border: 1px solid var(--neon-cyan); width: 90%; max-width: 400px; position: relative; box-shadow: 0 0 30px rgba(0, 242, 255, 0.2); }
+        /* ================= MODALS & FORMS ================= */
+        .modal-overlay { 
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0,0,0,0.85); 
+            backdrop-filter: blur(5px); 
+            z-index: 10000; /* FIXED: Now explicitly much higher than auth-view */
+            justify-content: center; 
+            align-items: center; 
+        }
+        
+        .modal-content { 
+            background: var(--card-bg); 
+            padding: 40px; 
+            border-radius: 15px; 
+            border: 1px solid var(--neon-cyan); 
+            width: 90%; 
+            max-width: 400px; 
+            position: relative; 
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.8); 
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+        
         .modal-content.large-modal { max-width: 800px; padding: 30px; }
         .modal-content h2 { margin-top: 0; color: var(--neon-cyan); text-align: center; margin-bottom: 20px; }
         .close-btn { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; color: #888; cursor: pointer; transition: 0.3s; }
         .close-btn:hover { color: var(--neon-pink); }
         
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 0.8rem; margin-bottom: 5px; color: #aaa; text-transform: uppercase; }
-        .form-group input { width: 100%; padding: 12px; background: #0a0c10; border: 1px solid #333; color: white; border-radius: 5px; font-family: 'Inter', sans-serif; color-scheme: dark; }
+        .form-group input { width: 100%; padding: 12px; background: #0a0c10; border: 1px solid #333; color: white; border-radius: 5px; font-family: 'Inter', sans-serif; color-scheme: dark; transition: border-color 0.3s;}
         .form-group input:focus { outline: none; border-color: var(--neon-cyan); }
         .form-group input[readonly] { background: #1a1f29; color: var(--neon-cyan); font-weight: bold; cursor: not-allowed; border-color: #222; }
-        .btn-submit { width: 100%; background: var(--neon-cyan); color: black; border: none; padding: 15px; font-weight: bold; font-family: 'Orbitron'; cursor: pointer; border-radius: 5px; margin-top: 10px; transition: 0.3s; }
         
-        /* DASHBOARD TABLES */
+        .btn-submit { width: 100%; background: var(--neon-cyan); color: black; border: none; padding: 15px; font-weight: bold; font-family: 'Orbitron'; cursor: pointer; border-radius: 5px; margin-top: 10px; transition: 0.3s; }
+        .btn-submit:hover:not(:disabled) { box-shadow: 0 0 15px var(--neon-cyan); transform: scale(1.02); }
+        
+        /* ================= DASHBOARD & ADMIN ================= */
         #admin-view { display: none; min-height: 100vh; padding: 80px 10%; background: var(--bg-dark); }
         .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #333; padding-bottom: 20px; }
+        .admin-controls { display: flex; gap: 15px; }
+        
         .admin-table-container { overflow-x: auto; max-height: 60vh; }
         table { width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 10px; overflow: hidden; }
         th, td { padding: 15px; text-align: left; border-bottom: 1px solid #222; }
         th { background: #161a24; color: var(--neon-cyan); font-family: 'Orbitron'; font-size: 0.9rem; }
         tr:hover { background: #1a1f29; }
-        .btn-delete { background: rgba(255,0,85,0.1); color: var(--neon-pink); border: 1px solid var(--neon-pink); padding: 5px 10px; border-radius: 3px; cursor: pointer; }
+        
+        .btn-delete { background: rgba(255,0,85,0.1); color: var(--neon-pink); border: 1px solid var(--neon-pink); padding: 5px 10px; border-radius: 3px; cursor: pointer; transition: 0.3s; font-weight: bold;}
+        .btn-delete:hover { background: var(--neon-pink); color: white; }
+        
+        .btn-refresh { background: rgba(0,242,255,0.1); color: var(--neon-cyan); border: 1px solid var(--neon-cyan); padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; display: flex; align-items: center; gap: 8px; }
+        .btn-refresh:hover { background: var(--neon-cyan); color: black; }
 
-        @media (max-width: 768px) { .hero h1 { font-size: 2.5rem; } header { flex-direction: column; gap: 15px; } .nav-links { flex-wrap: wrap; justify-content: center; } }
+        @media (max-width: 768px) { .hero h1 { font-size: 2.5rem; } header { flex-direction: column; gap: 15px; } .nav-links { flex-wrap: wrap; justify-content: center; } .admin-header { flex-direction: column; gap: 15px; text-align: center;} }
     </style>
 </head>
 <body>
@@ -297,11 +405,12 @@
     <div class="modal-content" style="border-color: var(--neon-pink); box-shadow: 0 0 30px rgba(255, 0, 85, 0.2);">
         <span class="close-btn" onclick="closeModal('admin-login-modal')">&times;</span>
         <h2 style="color: var(--neon-pink);">System Override</h2>
+        <p style="text-align:center; color:#888; font-size:0.8rem; margin-bottom:25px;">Staff access portal. Unauthorized entry logged.</p>
         <form id="admin-login-form" onsubmit="handleAdminLogin(event)">
-            <div class="form-group"><label>Username</label><input type="text" id="admin-user" required></div>
-            <div class="form-group"><label>Password</label><input type="password" id="admin-pass" required></div>
-            <p id="admin-error" style="color:var(--neon-pink); font-size:0.8rem; text-align:center; display:none;">Access Denied. Invalid credentials.</p>
-            <button type="submit" class="btn-submit" style="background:var(--neon-pink);">AUTHENTICATE</button>
+            <div class="form-group"><label>Username</label><input type="text" id="admin-user" placeholder="Admin ID" required></div>
+            <div class="form-group"><label>Password</label><input type="password" id="admin-pass" placeholder="••••••••" required></div>
+            <p id="admin-error" style="color:var(--neon-pink); font-size:0.85rem; text-align:center; display:none; background: rgba(255,0,85,0.1); padding: 10px; border-radius: 5px;">Access Denied. Invalid credentials.</p>
+            <button type="submit" class="btn-submit" style="background:var(--neon-pink); color:white;">AUTHENTICATE</button>
         </form>
     </div>
 </div>
@@ -311,9 +420,12 @@
     <div class="admin-header">
         <div>
             <h2>Admin <span style="color:var(--neon-cyan)">Dashboard</span></h2>
-            <p style="color:#888; font-size:0.9rem;">Manage incoming reservations from Google Sheets</p>
+            <p style="color:#888; font-size:0.9rem;">Manage incoming reservations securely.</p>
         </div>
-        <button class="btn-delete" onclick="logoutAdmin()" style="border-color:#888; color:#888;">EXIT ADMIN</button>
+        <div class="admin-controls">
+            <button class="btn-refresh" onclick="fetchAdminBookings()"><i class="fas fa-sync-alt"></i> Refresh Data</button>
+            <button class="btn-delete" onclick="logoutAdmin()" style="border-color:#888; color:#888; background: transparent;">EXIT ADMIN</button>
+        </div>
     </div>
     <div class="admin-table-container">
         <table>
@@ -331,31 +443,45 @@
     // =========================================================================================
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwe5K-bDYJ2Wl4cj2ow1E11XWONjSrWCr5Fyt8dStJnlEbeSreee73TggdAlqyqZAXZ/exec";
 
-    // --- STATE MANAGEMENT ---
-    let currentUser = JSON.parse(localStorage.getItem('x3_currentUser')) || null;
+    // --- BUG FIX: CLEAR OLD STUCK GUEST SESSIONS ---
+    // If a guest was previously saved into permanent localStorage, wipe it. 
+    // Guests should only be saved temporarily in sessionStorage.
+    let legacyLocalUser = JSON.parse(localStorage.getItem('x3_currentUser'));
+    if (legacyLocalUser && legacyLocalUser.type === 'guest') {
+        localStorage.removeItem('x3_currentUser');
+        legacyLocalUser = null;
+    }
+
+    // Determine current user: Google users load from Local, Guests load from Session
+    let currentUser = legacyLocalUser || JSON.parse(sessionStorage.getItem('x3_currentUser')) || null;
 
     window.onload = function() {
         if (currentUser) {
             initMainApp();
         } else {
+            // Show Login View
             document.getElementById('auth-view').style.display = 'flex';
             document.getElementById('main-content').style.display = 'none';
+            document.getElementById('admin-view').style.display = 'none';
             
-            // --- INITIALIZE REAL GOOGLE SIGN-IN ---
-            google.accounts.id.initialize({
-                client_id: "1036364685174-86it6s87gsglra434rulcnmk2ijiudo4.apps.googleusercontent.com",
-                callback: handleGoogleCredentialResponse
-            });
-            google.accounts.id.renderButton(
-                document.getElementById("google-button-div"),
-                { theme: "outline", size: "large", width: "320" }  
-            );
+            // Render Real Google Sign-in Button
+            try {
+                google.accounts.id.initialize({
+                    client_id: "1036364685174-86it6s87gsglra434rulcnmk2ijiudo4.apps.googleusercontent.com",
+                    callback: handleGoogleCredentialResponse
+                });
+                google.accounts.id.renderButton(
+                    document.getElementById("google-button-div"),
+                    { theme: "outline", size: "large", width: "320" }  
+                );
+            } catch (e) {
+                console.log("Google Login rendering issue, usually due to Adblocker or Network.");
+            }
         }
     };
 
     // --- UTILITY: TIME FORMATTERS (INDIAN STANDARD TIME) ---
     function getISTDateString() {
-        // Gets 'Today' exactly in IST timezone to prevent incorrect past bookings
         const dateIST = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
         const yyyy = dateIST.getFullYear();
         const mm = String(dateIST.getMonth() + 1).padStart(2, '0');
@@ -366,7 +492,7 @@
     function formatReadableDate(dateString) {
         if (!dateString) return "";
         const d = new Date(dateString);
-        if (isNaN(d)) return dateString; // Fallback
+        if (isNaN(d)) return dateString; 
         return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
     }
 
@@ -375,7 +501,7 @@
         const [hourString, minute] = timeString.split(':');
         let hour = parseInt(hourString, 10);
         const ampm = hour >= 12 ? 'PM' : 'AM';
-        hour = hour % 12 || 12; // convert 0 to 12
+        hour = hour % 12 || 12; 
         return `${String(hour).padStart(2, '0')}:${minute} ${ampm}`;
     }
 
@@ -401,7 +527,13 @@
     }
 
     function completeLogin() {
-        localStorage.setItem('x3_currentUser', JSON.stringify(currentUser));
+        // Fix applied: Google saves permanently, Guest saves temporarily
+        if (currentUser.type === 'guest') {
+            sessionStorage.setItem('x3_currentUser', JSON.stringify(currentUser));
+        } else {
+            localStorage.setItem('x3_currentUser', JSON.stringify(currentUser));
+        }
+        
         document.getElementById('auth-view').style.display = 'none';
         initMainApp();
     }
@@ -409,6 +541,7 @@
     function logoutUser() {
         if(confirm("Are you sure you want to log out?")) {
             localStorage.removeItem('x3_currentUser');
+            sessionStorage.removeItem('x3_currentUser');
             currentUser = null;
             window.location.reload(); 
         }
@@ -416,6 +549,7 @@
 
     function initMainApp() {
         document.getElementById('auth-view').style.display = 'none';
+        document.getElementById('admin-view').style.display = 'none';
         document.getElementById('main-content').style.display = 'block';
         document.getElementById('display-username').innerText = currentUser.name;
         
@@ -445,6 +579,11 @@
 
     function closeModal(modalId) {
         document.getElementById(modalId).style.display = 'none';
+        // Reset specific forms cleanly on close
+        if(modalId === 'admin-login-modal') {
+            document.getElementById('admin-login-form').reset();
+            document.getElementById('admin-error').style.display = 'none';
+        }
     }
 
     async function handleBookingSubmit(e) {
@@ -452,7 +591,9 @@
         if (GOOGLE_SCRIPT_URL.includes("PASTE_YOUR")) return alert("Please configure GOOGLE_SCRIPT_URL in code.");
         
         const submitBtn = e.target.querySelector('.btn-submit');
-        submitBtn.innerText = "PROCESSING..."; submitBtn.disabled = true; submitBtn.style.opacity = "0.7";
+        submitBtn.innerText = "PROCESSING..."; 
+        submitBtn.disabled = true; 
+        submitBtn.style.opacity = "0.7";
 
         const newBooking = {
             action: "book",
@@ -462,7 +603,6 @@
             phone: document.getElementById('book-phone').value,
             date: document.getElementById('book-date').value,
             time: document.getElementById('book-time').value,
-            // Accurate IST recording for timestamp
             timestamp: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
         };
 
@@ -478,14 +618,16 @@
         } catch (error) {
             alert("Connection error."); console.error(error);
         } finally {
-            submitBtn.innerText = "CONFIRM BOOKING"; submitBtn.disabled = false; submitBtn.style.opacity = "1";
+            submitBtn.innerText = "CONFIRM BOOKING"; 
+            submitBtn.disabled = false; 
+            submitBtn.style.opacity = "1";
         }
     }
 
     // --- CUSTOMER "MY BOOKINGS" VIEWER ---
     async function openCustomerBookings() {
         if (currentUser.type === 'guest') {
-            alert("Guests cannot view booking history. Please log out and sign in with Google to track your passes.");
+            alert("Guests cannot view booking history. Please log out and sign in with Google to track your passes securely.");
             return;
         }
 
@@ -518,7 +660,7 @@
                     <td style="font-family:'Orbitron'; color:var(--neon-cyan);">${b.id}</td>
                     <td style="font-weight:bold;">${b.pass}</td>
                     <td>${formatReadableDate(b.date)}</td>
-                    <td style="color:var(--neon-pink);">${format12HourTime(b.time)}</td>
+                    <td style="color:var(--neon-pink); font-weight:bold;">${format12HourTime(b.time)}</td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -527,20 +669,25 @@
         }
     }
 
-    // --- ADMIN FLOW ---
+    // --- ADMIN DASHBOARD FLOW ---
     function openAdminLogin(e) {
         e.preventDefault();
+        // Since modal-overlay z-index is 10000 and auth-view is 5000, 
+        // this will perfectly pop up over the login gateway now.
         document.getElementById('admin-login-modal').style.display = 'flex';
         document.getElementById('admin-error').style.display = 'none';
+        document.getElementById('admin-user').focus();
     }
 
     function handleAdminLogin(e) {
         e.preventDefault();
-        if (document.getElementById('admin-user').value === 'aaryesh' && document.getElementById('admin-pass').value === '12345') {
-            document.getElementById('admin-login-form').reset();
+        const user = document.getElementById('admin-user').value;
+        const pass = document.getElementById('admin-pass').value;
+
+        if (user === 'aaryesh' && pass === '12345') {
             closeModal('admin-login-modal');
             
-            // Hide the auth and main view, show admin view
+            // Hide the auth and main view, show admin view completely
             document.getElementById('auth-view').style.display = 'none';
             document.getElementById('main-content').style.display = 'none';
             document.getElementById('admin-view').style.display = 'block';
@@ -548,13 +695,18 @@
             fetchAdminBookings();
         } else {
             document.getElementById('admin-error').style.display = 'block';
+            // Simple shake animation effect for error
+            const form = document.getElementById('admin-login-form');
+            form.style.transform = 'translateX(-5px)';
+            setTimeout(() => form.style.transform = 'translateX(5px)', 100);
+            setTimeout(() => form.style.transform = 'translateX(0)', 200);
         }
     }
 
     function logoutAdmin() {
         document.getElementById('admin-view').style.display = 'none';
         
-        // Return to where they belong based on session
+        // Logic to return where they belong cleanly
         if (currentUser) {
             initMainApp();
         } else {
@@ -566,8 +718,12 @@
     async function fetchAdminBookings() {
         const tbody = document.getElementById('bookings-table-body');
         const noMsg = document.getElementById('no-bookings-msg');
+        const refreshBtn = document.querySelector('.btn-refresh i');
         
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Loading Data from Google Sheets...</td></tr>';
+        // Spin the refresh icon for nice UI feedback
+        if(refreshBtn) refreshBtn.classList.add('fa-spin');
+        
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 30px;">Loading Data securely from Google Sheets...</td></tr>';
         noMsg.style.display = 'none';
 
         try {
@@ -575,44 +731,56 @@
             const bookings = await response.json();
 
             tbody.innerHTML = '';
-            if (bookings.length === 0) { noMsg.style.display = 'block'; return; }
+            if (bookings.length === 0) { 
+                noMsg.style.display = 'block'; 
+            } else {
+                bookings.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
-            bookings.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-
-            bookings.forEach(b => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td style="font-family:'Orbitron'; color:var(--neon-cyan);">${b.id}</td>
-                    <td style="font-weight:bold;">${b.name}</td>
-                    <td>${b.phone}</td>
-                    <td>${b.pass}</td>
-                    <td>
-                        ${formatReadableDate(b.date)} 
-                        <span style="color:var(--neon-pink); font-weight:bold; font-size:0.85rem; margin-left:8px;">
-                            ${format12HourTime(b.time)}
-                        </span>
-                    </td>
-                    <td style="color:#aaa;">Counter</td>
-                    <td><button class="btn-delete" onclick="deleteBooking('${b.id}')">Delete</button></td>
-                `;
-                tbody.appendChild(tr);
-            });
+                bookings.forEach(b => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td style="font-family:'Orbitron'; color:var(--neon-cyan); font-weight:bold;">${b.id}</td>
+                        <td style="font-weight:bold; color:white;">${b.name}</td>
+                        <td style="color:#aaa;">${b.phone}</td>
+                        <td>${b.pass}</td>
+                        <td>
+                            ${formatReadableDate(b.date)} 
+                            <span style="color:var(--neon-pink); font-weight:bold; font-size:0.85rem; margin-left:8px; display:inline-block; background:rgba(255,0,85,0.1); padding:3px 8px; border-radius:3px;">
+                                ${format12HourTime(b.time)}
+                            </span>
+                        </td>
+                        <td style="color:#aaa;">Counter</td>
+                        <td><button class="btn-delete" onclick="deleteBooking('${b.id}')"><i class="fas fa-trash"></i> Drop</button></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
         } catch (error) {
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:red;">Failed to load data.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:red;">Failed to fetch live database. Check Network or Link.</td></tr>';
+        } finally {
+            // Stop spinning the icon
+            if(refreshBtn) refreshBtn.classList.remove('fa-spin');
         }
     }
 
     async function deleteBooking(id) {
-        if(confirm(`Remove booking ${id}?`)) {
+        if(confirm(`SYSTEM OVERRIDE: Are you sure you want to permanently delete the booking ${id}?`)) {
             try {
-                fetchAdminBookings(); 
+                // Immediately show processing state to admin
+                document.getElementById('bookings-table-body').innerHTML = `<tr><td colspan="7" style="text-align:center;">Executing deletion protocol for ${id}...</td></tr>`;
+                
                 await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST', mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ action: "delete", id: id })
                 });
+                
+                // Allow Google sheets to finish running, then refresh automatically
                 setTimeout(() => { fetchAdminBookings(); }, 1200);
-            } catch (error) { alert("Failed to delete."); }
+            } catch (error) { 
+                alert("Critical Error: Failed to execute deletion request."); 
+                fetchAdminBookings(); // Recover display
+            }
         }
     }
 </script>
