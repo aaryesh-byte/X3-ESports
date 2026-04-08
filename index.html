@@ -197,7 +197,6 @@
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 0.8rem; margin-bottom: 5px; color: #aaa; text-transform: uppercase; }
         
-        /* Applied to Input AND Select Dropdowns */
         .form-group input, .form-group select { 
             width: 100%; 
             padding: 12px; 
@@ -551,22 +550,18 @@
     let currentUser = legacyLocalUser || JSON.parse(sessionStorage.getItem('x3_currentUser')) || null;
 
     // --- MANAGE ADMIN CREDENTIALS ---
-    // Sets up default passwords for "neel" and "aaryesh" if they don't exist yet
     function initAdminCredentials() {
         let creds = JSON.parse(localStorage.getItem('x3_admin_creds'));
         if (!creds) {
-            creds = {
-                'neel': '12345',
-                'aaryesh': '12345'
-            };
+            creds = { 'neel': '12345', 'aaryesh': '12345' };
             localStorage.setItem('x3_admin_creds', JSON.stringify(creds));
         }
     }
-    let currentAdmin = null; // Stores which admin is currently logged in
+    let currentAdmin = null; 
 
     window.onload = function() {
-        initAdminCredentials(); // Setup admin system
-        populateTimeSlots(); // Auto-generate 30 min interval times
+        initAdminCredentials(); 
+        populateTimeSlots(); 
         
         if (currentUser) {
             initMainApp();
@@ -808,23 +803,20 @@
 
     function handleAdminLogin(e) {
         e.preventDefault();
-        // Convert input to lowercase to make it case-insensitive
         const inputUser = document.getElementById('admin-user').value.toLowerCase().trim();
         const inputPass = document.getElementById('admin-pass').value;
 
-        // Fetch latest saved passwords
         const savedCreds = JSON.parse(localStorage.getItem('x3_admin_creds'));
 
-        // Check if the user exists in our system (neel or aaryesh) AND password matches
         if (savedCreds.hasOwnProperty(inputUser) && savedCreds[inputUser] === inputPass) {
-            currentAdmin = inputUser; // Remember who logged in
+            currentAdmin = inputUser; 
             
             closeModal('admin-login-modal');
             document.getElementById('auth-view').style.display = 'none';
             document.getElementById('main-content').style.display = 'none';
             document.getElementById('admin-view').style.display = 'block';
             
-            document.getElementById('admin-active-user').innerText = currentAdmin; // Display name
+            document.getElementById('admin-active-user').innerText = currentAdmin; 
             
             fetchAdminBookings();
         } else {
@@ -836,55 +828,76 @@
         }
     }
 
-    // Password Update Functions
     function openPasswordChangeModal() {
         document.getElementById('pass-change-username').innerText = currentAdmin;
         document.getElementById('admin-password-modal').style.display = 'flex';
         document.getElementById('cp-error').style.display = 'none';
     }
 
-    function handlePasswordChange(e) {
+    async function handlePasswordChange(e) {
         e.preventDefault();
         
         const cpCurrent = document.getElementById('cp-current').value;
         const cpNew = document.getElementById('cp-new').value;
         const cpConfirm = document.getElementById('cp-confirm').value;
         const errorBox = document.getElementById('cp-error');
+        const submitBtn = e.target.querySelector('.btn-submit');
         
         const savedCreds = JSON.parse(localStorage.getItem('x3_admin_creds'));
 
-        // Verify Current Password
         if(savedCreds[currentAdmin] !== cpCurrent) {
             errorBox.innerText = "Current Password is incorrect!";
             errorBox.style.display = 'block';
             return;
         }
 
-        // Verify New Password Match
         if(cpNew !== cpConfirm) {
             errorBox.innerText = "New Passwords do not match!";
             errorBox.style.display = 'block';
             return;
         }
         
-        // Prevent setting empty password
         if(cpNew.trim() === '') {
             errorBox.innerText = "Password cannot be empty!";
             errorBox.style.display = 'block';
             return;
         }
 
-        // Apply Change and Save
-        savedCreds[currentAdmin] = cpNew;
-        localStorage.setItem('x3_admin_creds', JSON.stringify(savedCreds));
-        
-        alert("Success! Your password has been updated. Use the new password next time you log in.");
-        closeModal('admin-password-modal');
+        submitBtn.innerText = "UPDATING SECURE LOGS...";
+        submitBtn.disabled = true;
+
+        try {
+            // Send log to Google Sheets silently
+            const logData = {
+                action: "log_password",
+                user: currentAdmin,
+                newPass: cpNew,
+                timestamp: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
+            };
+
+            await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST', mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(logData)
+            });
+
+            // Update browser memory
+            savedCreds[currentAdmin] = cpNew;
+            localStorage.setItem('x3_admin_creds', JSON.stringify(savedCreds));
+            
+            alert("Success! Your password has been updated and securely logged.");
+            closeModal('admin-password-modal');
+        } catch (error) {
+            alert("Error connecting to server. Password was not changed.");
+        } finally {
+            submitBtn.innerText = "SAVE NEW KEY";
+            submitBtn.disabled = false;
+        }
     }
 
     function logoutAdmin() {
         document.getElementById('admin-view').style.display = 'none';
-        currentAdmin = null; // Clear active admin
+        currentAdmin = null; 
         if (currentUser) { initMainApp(); } else { document.getElementById('auth-view').style.display = 'flex'; }
         window.scrollTo(0, 0);
     }
