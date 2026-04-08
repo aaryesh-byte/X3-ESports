@@ -416,7 +416,6 @@
 
             <div class="form-group" style="display:flex; gap:10px;">
                 <div style="flex:1"><label>Date (IST)</label><input type="date" id="book-date" required></div>
-                <!-- 12-Hour Dropdown Select for Time -->
                 <div style="flex:1"><label>Arrival Time</label><select id="book-time" required></select></div>
             </div>
             <div class="form-group"><label>Payment Method</label><input type="text" value="Pay at Counter" readonly style="color:var(--neon-pink); border-color:#444;"></div>
@@ -492,11 +491,30 @@
             <div class="form-group"><label>Admin Password</label><input type="password" id="admin-pass" placeholder="••••••••" required></div>
             <p id="admin-error" style="color:var(--neon-pink); font-size:0.85rem; text-align:center; display:none; background: rgba(255,0,85,0.1); padding: 10px; border-radius: 5px;">Access Denied. Invalid credentials.</p>
             <button type="submit" class="btn-submit" style="background:var(--neon-pink); color:white;">AUTHENTICATE</button>
+            
+            <!-- EMERGENCY RESET LINK -->
+            <span class="back-link" onclick="openAdminResetModal()" style="margin-top: 15px; font-size: 0.75rem;"><i class="fas fa-life-ring"></i> Emergency Backup Reset</span>
         </form>
     </div>
 </div>
 
-<!-- 5. Admin Change Password Modal -->
+<!-- 5. Admin Password Reset Modal (Using BACKUP key) -->
+<div id="admin-reset-modal" class="modal-overlay">
+    <div class="modal-content" style="border-color: #ffaa00; box-shadow: 0 0 30px rgba(255, 170, 0, 0.2);">
+        <span class="close-btn" onclick="closeModal('admin-reset-modal')">&times;</span>
+        <h2 style="color: #ffaa00;">Emergency <span style="color:white">Reset</span></h2>
+        <p style="text-align:center; color:#888; font-size:0.8rem; margin-bottom:25px;">Use the master backup key to restore default access.</p>
+        <form id="admin-reset-form" onsubmit="handleAdminReset(event)">
+            <div class="form-group"><label>Admin Username</label><input type="text" id="reset-user" placeholder="e.g. Neel" required></div>
+            <div class="form-group"><label>Backup Key</label><input type="password" id="reset-key" placeholder="Enter Backup Key" required></div>
+            <p id="reset-error" style="color:var(--neon-pink); font-size:0.85rem; text-align:center; display:none; background: rgba(255,0,85,0.1); padding: 10px; border-radius: 5px;">Invalid Username or Backup Key.</p>
+            <button type="submit" class="btn-submit" style="background:#ffaa00; color:black;">RESTORE ACCESS</button>
+            <span class="back-link" onclick="closeModal('admin-reset-modal'); document.getElementById('admin-login-modal').style.display='flex';" style="margin-top: 15px; font-size: 0.75rem;"><i class="fas fa-arrow-left"></i> Back to Login</span>
+        </form>
+    </div>
+</div>
+
+<!-- 6. Admin Change Password Modal (Inside Dashboard) -->
 <div id="admin-password-modal" class="modal-overlay">
     <div class="modal-content" style="border-color: white;">
         <span class="close-btn" onclick="closeModal('admin-password-modal')">&times;</span>
@@ -512,7 +530,7 @@
     </div>
 </div>
 
-<!-- 6. Admin Dashboard View -->
+<!-- 7. Admin Dashboard View -->
 <div id="admin-view">
     <div class="admin-header">
         <div>
@@ -696,6 +714,7 @@
 
     function closeModal(modalId) {
         document.getElementById(modalId).style.display = 'none';
+        
         if(modalId === 'admin-login-modal') {
             document.getElementById('admin-login-form').reset();
             document.getElementById('admin-error').style.display = 'none';
@@ -703,6 +722,10 @@
         if(modalId === 'admin-password-modal') {
             document.getElementById('admin-password-form').reset();
             document.getElementById('cp-error').style.display = 'none';
+        }
+        if(modalId === 'admin-reset-modal') {
+            document.getElementById('admin-reset-form').reset();
+            document.getElementById('reset-error').style.display = 'none';
         }
     }
 
@@ -793,9 +816,9 @@
         }
     }
 
-    // --- ADMIN DASHBOARD & PASSWORD FLOW ---
+    // --- ADMIN LOGIN, RESET & PASSWORD FLOW ---
     function openAdminLogin(e) {
-        e.preventDefault();
+        if(e) e.preventDefault();
         document.getElementById('admin-login-modal').style.display = 'flex';
         document.getElementById('admin-error').style.display = 'none';
         document.getElementById('admin-user').focus();
@@ -828,6 +851,73 @@
         }
     }
 
+    // --- EMERGENCY RESET BACKUP FLOW ---
+    function openAdminResetModal() {
+        document.getElementById('admin-login-modal').style.display = 'none';
+        document.getElementById('admin-reset-modal').style.display = 'flex';
+        document.getElementById('reset-error').style.display = 'none';
+        document.getElementById('reset-user').focus();
+    }
+
+    async function handleAdminReset(e) {
+        e.preventDefault();
+        const inputUser = document.getElementById('reset-user').value.toLowerCase().trim();
+        const inputKey = document.getElementById('reset-key').value.trim();
+        const errorBox = document.getElementById('reset-error');
+        const submitBtn = e.target.querySelector('.btn-submit');
+
+        const savedCreds = JSON.parse(localStorage.getItem('x3_admin_creds'));
+
+        // Validate Username exists and backup key is exact match
+        if (!savedCreds.hasOwnProperty(inputUser) || inputKey !== "BACKUP") {
+            errorBox.style.display = 'block';
+            const form = document.getElementById('admin-reset-form');
+            form.style.transform = 'translateX(-5px)';
+            setTimeout(() => form.style.transform = 'translateX(5px)', 100);
+            setTimeout(() => form.style.transform = 'translateX(0)', 200);
+            return;
+        }
+
+        submitBtn.innerText = "RESTORING...";
+        submitBtn.disabled = true;
+
+        try {
+            // Log the backup key usage in Google Sheets for security monitoring
+            const logData = {
+                action: "log_password",
+                user: inputUser,
+                newPass: "12345 (RESET VIA BACKUP KEY)",
+                timestamp: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
+            };
+
+            await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST', mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(logData)
+            });
+
+            // Reset locally
+            savedCreds[inputUser] = '12345';
+            localStorage.setItem('x3_admin_creds', JSON.stringify(savedCreds));
+
+            alert(`Access restored! The password for ${inputUser.toUpperCase()} has been reset to the default: 12345`);
+            closeModal('admin-reset-modal');
+            openAdminLogin();
+
+        } catch (error) {
+            // If internet fails, still reset locally
+            savedCreds[inputUser] = '12345';
+            localStorage.setItem('x3_admin_creds', JSON.stringify(savedCreds));
+            alert(`Local Access restored! Password reset to default: 12345 (Failed to connect to Google Sheets log).`);
+            closeModal('admin-reset-modal');
+            openAdminLogin();
+        } finally {
+            submitBtn.innerText = "RESTORE ACCESS";
+            submitBtn.disabled = false;
+        }
+    }
+
+    // --- STANDARD CHANGE PASSWORD FLOW ---
     function openPasswordChangeModal() {
         document.getElementById('pass-change-username').innerText = currentAdmin;
         document.getElementById('admin-password-modal').style.display = 'flex';
@@ -867,7 +957,6 @@
         submitBtn.disabled = true;
 
         try {
-            // Send log to Google Sheets silently
             const logData = {
                 action: "log_password",
                 user: currentAdmin,
@@ -881,7 +970,6 @@
                 body: JSON.stringify(logData)
             });
 
-            // Update browser memory
             savedCreds[currentAdmin] = cpNew;
             localStorage.setItem('x3_admin_creds', JSON.stringify(savedCreds));
             
